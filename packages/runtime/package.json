@@ -1,0 +1,31 @@
+{
+  "name": "@campus/runtime",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/runtime.tsx",
+    "./auth": "./src/auth/public-api.ts",
+    "./icon": "./src/icon/public-api.ts",
+    "./http-client": "./src/http-client/public-api.ts",
+    "./link": "./src/link/public-api.ts",
+    "./local-storage": "./src/local-storage/public-api.ts",
+    "./query": "./src/query/public-api.ts",
+    "./router": "./src/router/public-api.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^8.57.0",
+    "typescript": "5.7.3"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.66.9",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
