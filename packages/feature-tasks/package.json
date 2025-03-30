@@ -5,9 +5,13 @@
   "scripts": {
     "build": "vite build && tsc --noEmit"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "exports": {
+    "./MyTasks": "./src/features/MyTasks/MyTasks.tsx",
+    "./TaskDetails": "./src/features/TaskDetails/TaskDetails.tsx"
+  },
   "dependencies": {
+    "@campus/runtime": "workspace:*",
+    "@campus/ui": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -1,6 +1,6 @@
+import { MyTasks } from "@campus/feature-tasks/MyTasks";
 import { useAuthToken } from "@campus/runtime/auth";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-
 export const Route = createFileRoute("/")({
   component: Home,
 });
@@ -17,5 +17,9 @@ function Home() {
     return null;
   }
 
-  return <div>HIYA</div>;
+  return (
+    <div>
+      <MyTasks />
+    </div>
+  );
 }

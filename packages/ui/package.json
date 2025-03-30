@@ -1,0 +1,41 @@
+{
+  "name": "@campus/ui",
+  "private": true,
+  "version": "1.0.0",
+  "exports": {
+    "./Button": "./src/Button/Button.tsx",
+    "./ButtonRow": "./src/ButtonRow/ButtonRow.tsx",
+    "./Card": "./src/Card/Card.tsx",
+    "./Checkbox": "./src/Checkbox/Checkbox.tsx",
+    "./Form": "./src/Form/Form.tsx",
+    "./Icon": "./src/Icon/public-api.ts",
+    "./Link": "./src/Link/Link.tsx",
+    "./Text": "./src/Text/Text.tsx",
+    "./TextInput": "./src/TextInput/TextInput.tsx",
+    "./cn": "./src/utils/cn.tsx"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@campus/runtime": "workspace:*",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.485.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.4",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^8",
+    "tailwind-merge": "^2.5.2",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

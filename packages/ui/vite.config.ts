@@ -25,7 +25,7 @@ export default defineConfig({
     },
     lib: {
       entry: "src/index.ts",
-      name: "tasks",
+      name: "ui",
       fileName: "index",
       formats: ["es"],
     },

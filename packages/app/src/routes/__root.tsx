@@ -13,7 +13,6 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
-import { Icon } from "~/components/Icon";
 import { NotFound } from "~/components/NotFound";
 import appCss from "~/styles/app.css?url";
 import { seo } from "~/utils/seo";
@@ -104,9 +103,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Runtime router={router} linkComponent={Link} iconComponent={Icon}>
+        <Runtime router={router} linkComponent={Link}>
           <div className="p-2 flex gap-2 text-lg">{children}</div>
+
           <TanStackRouterDevtools position="bottom-right" />
+
           <Scripts />
         </Runtime>
       </body>
