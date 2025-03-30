@@ -1,6 +1,6 @@
 import { TaskDetails } from "@campus/feature-tasks/TaskDetails";
 import { createFileRoute } from "@tanstack/react-router";
-export const Route = createFileRoute("/tasks/$taskId")({
+export const Route = createFileRoute("/_dashboard/tasks/$taskId")({
   component: RouteComponent,
 });
 

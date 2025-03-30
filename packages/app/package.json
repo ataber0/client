@@ -9,6 +9,7 @@
     "start": "vinxi start"
   },
   "dependencies": {
+    "@campus/feature-auth": "workspace:*",
     "@campus/runtime": "workspace:*",
     "@campus/feature-tasks": "workspace:*",
     "@tanstack/react-router": "^1.114.29",

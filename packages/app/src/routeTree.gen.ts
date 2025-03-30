@@ -11,11 +11,17 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as LoginRouteImport } from './routes/login.route'
-import { Route as IndexImport } from './routes/index'
-import { Route as TasksTaskIdRouteImport } from './routes/tasks.$taskId.route'
+import { Route as DashboardIndexImport } from './routes/_dashboard/index'
+import { Route as DashboardTasksTaskIdRouteImport } from './routes/_dashboard/tasks.$taskId.route'
 
 // Create/Update Routes
+
+const DashboardRoute = DashboardImport.update({
+  id: '/_dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRouteRoute = LoginRouteImport.update({
   id: '/login',
@@ -23,29 +29,22 @@ const LoginRouteRoute = LoginRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
 
-const TasksTaskIdRouteRoute = TasksTaskIdRouteImport.update({
+const DashboardTasksTaskIdRouteRoute = DashboardTasksTaskIdRouteImport.update({
   id: '/tasks/$taskId',
   path: '/tasks/$taskId',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -53,56 +52,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRoute
     }
-    '/tasks/$taskId': {
-      id: '/tasks/$taskId'
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/_dashboard/': {
+      id: '/_dashboard/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/tasks/$taskId': {
+      id: '/_dashboard/tasks/$taskId'
       path: '/tasks/$taskId'
       fullPath: '/tasks/$taskId'
-      preLoaderRoute: typeof TasksTaskIdRouteImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof DashboardTasksTaskIdRouteImport
+      parentRoute: typeof DashboardImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardTasksTaskIdRouteRoute: typeof DashboardTasksTaskIdRouteRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardTasksTaskIdRouteRoute: DashboardTasksTaskIdRouteRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/login': typeof LoginRouteRoute
-  '/tasks/$taskId': typeof TasksTaskIdRouteRoute
+  '': typeof DashboardRouteWithChildren
+  '/': typeof DashboardIndexRoute
+  '/tasks/$taskId': typeof DashboardTasksTaskIdRouteRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRouteRoute
-  '/tasks/$taskId': typeof TasksTaskIdRouteRoute
+  '/': typeof DashboardIndexRoute
+  '/tasks/$taskId': typeof DashboardTasksTaskIdRouteRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/login': typeof LoginRouteRoute
-  '/tasks/$taskId': typeof TasksTaskIdRouteRoute
+  '/_dashboard': typeof DashboardRouteWithChildren
+  '/_dashboard/': typeof DashboardIndexRoute
+  '/_dashboard/tasks/$taskId': typeof DashboardTasksTaskIdRouteRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/tasks/$taskId'
+  fullPaths: '/login' | '' | '/' | '/tasks/$taskId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/tasks/$taskId'
-  id: '__root__' | '/' | '/login' | '/tasks/$taskId'
+  to: '/login' | '/' | '/tasks/$taskId'
+  id:
+    | '__root__'
+    | '/login'
+    | '/_dashboard'
+    | '/_dashboard/'
+    | '/_dashboard/tasks/$taskId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   LoginRouteRoute: typeof LoginRouteRoute
-  TasksTaskIdRouteRoute: typeof TasksTaskIdRouteRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   LoginRouteRoute: LoginRouteRoute,
-  TasksTaskIdRouteRoute: TasksTaskIdRouteRoute,
+  DashboardRoute: DashboardRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -115,19 +147,27 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
         "/login",
-        "/tasks/$taskId"
+        "/_dashboard"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/login": {
       "filePath": "login.route.tsx"
     },
-    "/tasks/$taskId": {
-      "filePath": "tasks.$taskId.route.tsx"
+    "/_dashboard": {
+      "filePath": "_dashboard.tsx",
+      "children": [
+        "/_dashboard/",
+        "/_dashboard/tasks/$taskId"
+      ]
+    },
+    "/_dashboard/": {
+      "filePath": "_dashboard/index.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/tasks/$taskId": {
+      "filePath": "_dashboard/tasks.$taskId.route.tsx",
+      "parent": "/_dashboard"
     }
   }
 }

@@ -1,0 +1,27 @@
+{
+  "name": "@campus/feature-auth",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./Login": "./src/features/Login/Login.tsx"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@campus/runtime": "workspace:*",
+    "@campus/ui": "workspace:*",
+    "@types/node": "^22.13.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "eslint": "^8.57.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "5.7.3"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

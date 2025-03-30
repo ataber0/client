@@ -51,6 +51,9 @@ importers:
 
   packages/app:
     dependencies:
+      '@campus/feature-auth':
+        specifier: workspace:*
+        version: link:../feature-auth
       '@campus/feature-tasks':
         specifier: workspace:*
         version: link:../feature-tasks
@@ -106,6 +109,43 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.8.2)(vite@6.2.3(@types/node@22.13.14)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1))
+
+  packages/feature-auth:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.1.0
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.1.0(react@19.1.0)
+    devDependencies:
+      '@campus/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+      '@campus/ui':
+        specifier: workspace:*
+        version: link:../ui
+      '@types/node':
+        specifier: ^22.13.0
+        version: 22.13.14
+      '@types/react':
+        specifier: ^19.0.8
+        version: 19.0.12
+      '@types/react-dom':
+        specifier: ^19.0.3
+        version: 19.0.4(@types/react@19.0.12)
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      postcss:
+        specifier: ^8.5.1
+        version: 8.5.3
+      tailwindcss:
+        specifier: ^3.4.17
+        version: 3.4.17
+      typescript:
+        specifier: 5.7.3
+        version: 5.7.3
 
   packages/feature-tasks:
     dependencies:
