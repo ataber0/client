@@ -1,5 +1,5 @@
 {
-  "name": "router-mono-simple",
+  "name": "@campus-ai/client",
   "version": "1.0.0",
   "scripts": {
     "dev": "pnpm --filter @campus/app dev"

@@ -3,7 +3,7 @@ import elkjs from "elkjs/lib/elk.bundled.js";
 import { Node } from "../types/graph.models";
 
 // Constants for layout
-const NODE_SIZE = 70; // Size of each node (diameter)
+const NODE_SIZE = 50; // Size of each node (diameter)
 const MIN_SPACING = 100; // Minimum spacing between nodes
 const BASE_SPACING = 200; // Base spacing for the layout
 
@@ -19,8 +19,7 @@ function createElkGraph(tasks: Task[]) {
     // Store original task data for later use
     task: task,
     // Add size constraints to help ELK with layout
-    width: NODE_SIZE,
-    height: NODE_SIZE,
+    size: NODE_SIZE,
   }));
 
   const edges = tasks.flatMap((task) =>
@@ -32,9 +31,9 @@ function createElkGraph(tasks: Task[]) {
   );
 
   // Find root nodes (nodes with no incoming edges)
-  const rootNodeIds = tasks
+  const leafNodeIds = tasks
     .filter(
-      (task) => !tasks.some((t) => t.dependencies.some((d) => d.id === task.id))
+      (task) => !tasks.some((t) => t.dependents.some((d) => d.id === task.id))
     )
     .map((task) => task.id);
 
@@ -52,12 +51,11 @@ function createElkGraph(tasks: Task[]) {
       createdAt: new Date(),
       updatedAt: new Date(),
     } as unknown as Task,
-    width: 0,
-    height: 0,
+    size: 0,
   });
 
   // Add edges from virtual root to all root nodes
-  rootNodeIds.forEach((rootId) => {
+  leafNodeIds.forEach((rootId) => {
     edges.push({
       id: `${virtualRootId}-${rootId}`,
       sources: [virtualRootId],
@@ -75,7 +73,7 @@ function createElkGraph(tasks: Task[]) {
     id: "root",
     layoutOptions: {
       "elk.algorithm": "layered",
-      "elk.direction": "DOWN",
+      "elk.direction": "UP",
       "elk.spacing.nodeNode": nodeSpacing.toString(),
       "elk.layered.spacing.baseValue": baseSpacing.toString(),
       // Additional options for stability
@@ -111,6 +109,7 @@ export async function positionNodes(tasks: Task[]): Promise<Node[]> {
       id: elkNode.id,
       label: (elkNode as any).task.name,
       task: (elkNode as any).task,
+      size: elkNode.size,
       position: {
         x: elkNode.x!,
         y: elkNode.y!,

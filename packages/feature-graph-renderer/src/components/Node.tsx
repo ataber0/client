@@ -21,7 +21,7 @@ export const Node = ({ node }: NodeProps) => {
       key={node.id}
       x={node.position.x}
       y={node.position.y}
-      radius={35}
+      radius={node.size / 2}
       fillLinearGradientStartPoint={{ x: -35, y: -35 }}
       fillLinearGradientEndPoint={{ x: 35, y: 35 }}
       fillLinearGradientColorStops={[0, gradient.from, 1, gradient.to]}
@@ -31,7 +31,7 @@ export const Node = ({ node }: NodeProps) => {
       shadowOpacity={0.4}
       shadowOffset={{ x: 0, y: 0 }}
       stroke={isSelected ? "#FFFFFF" : undefined}
-      strokeWidth={isSelected ? 10 : 0}
+      strokeWidth={isSelected ? 6 : 0}
       onClick={() => {
         router.push("/tasks/" + node.id);
       }}

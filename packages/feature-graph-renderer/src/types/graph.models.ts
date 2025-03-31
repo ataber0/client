@@ -15,6 +15,7 @@ export interface Node {
   position: Point;
   label: string;
   task: Task;
+  size: number;
 }
 
 export interface Edge {
