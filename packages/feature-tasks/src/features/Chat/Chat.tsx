@@ -2,7 +2,7 @@ import { ButtonRow } from "@campus/ui/ButtonRow";
 import { cn } from "@campus/ui/cn";
 import { Loader } from "@campus/ui/Icon";
 import { Text } from "@campus/ui/Text";
-import { TextInput } from "@campus/ui/TextInput";
+import { TextArea } from "@campus/ui/TextArea";
 import { useState } from "react";
 import { TaskCommand, useChat } from "../../data-access/chat.data-access";
 
@@ -42,7 +42,7 @@ export const Chat = ({ className }: ChatProps) => {
       ))}
 
       <form className="bg-surface sticky bottom-0" onSubmit={handleSubmit}>
-        <TextInput
+        <TextArea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />

@@ -4,6 +4,7 @@ import { useAuthToken } from "@campus/runtime/auth";
 import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_dashboard")({
+  ssr: false,
   component: RouteComponent,
 });
 

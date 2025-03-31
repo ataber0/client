@@ -64,6 +64,7 @@ export const Route = createRootRoute({
   },
   notFoundComponent: () => <NotFound />,
   component: RootComponent,
+  ssr: false,
 });
 
 function RootComponent() {

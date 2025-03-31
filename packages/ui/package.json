@@ -11,6 +11,7 @@
     "./Icon": "./src/Icon/public-api.ts",
     "./Link": "./src/Link/Link.tsx",
     "./Text": "./src/Text/Text.tsx",
+    "./TextArea": "./src/TextArea/TextArea.tsx",
     "./TextInput": "./src/TextInput/TextInput.tsx",
     "./cn": "./src/utils/cn.tsx"
   },
