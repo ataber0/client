@@ -6,6 +6,7 @@
     "build": "vite build && tsc --noEmit"
   },
   "exports": {
+    "./Chat": "./src/features/Chat/Chat.tsx",
     "./MyTasks": "./src/features/MyTasks/MyTasks.tsx",
     "./TaskDetails": "./src/features/TaskDetails/TaskDetails.tsx"
   },

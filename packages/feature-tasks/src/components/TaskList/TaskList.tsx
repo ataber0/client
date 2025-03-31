@@ -14,12 +14,12 @@ export interface TaskListProps {
 
 export const TaskList = ({ tasks, header, className }: TaskListProps) => {
   return (
-    <div className={cn("bg-surface shadow-sm", className)}>
+    <div className={cn(className)}>
       {tasks.map((task, index) => (
         <Link
           key={task.id}
           href={`/tasks/${task.id}`}
-          className="flex flex-row items-center p-4 border-b border-gray-100"
+          className="flex flex-row items-center p-4 border-b border-gray-900"
         >
           <Checkbox
             className="mr-3"

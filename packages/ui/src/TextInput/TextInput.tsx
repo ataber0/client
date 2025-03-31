@@ -11,7 +11,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
       <input
         ref={ref}
         className={cn(
-          "w-full bg-gray-50 rounded-3xl p-4 border-2 border-gray-200 placeholder-gray-500 font-semibold",
+          "w-full bg-surface rounded-3xl p-4 border-2 border-gray-200 placeholder-on-surface font-semibold",
           className
         )}
         {...props}

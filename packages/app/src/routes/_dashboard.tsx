@@ -1,4 +1,5 @@
 import { GraphRenderer } from "@campus/feature-graph-renderer/GraphRenderer";
+import { Chat } from "@campus/feature-tasks/Chat";
 import { useAuthToken } from "@campus/runtime/auth";
 import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 
@@ -24,9 +25,11 @@ function RouteComponent() {
     <div>
       <GraphRenderer />
 
-      <div className="fixed top-0 left-0">
+      <div className="bg-surface rounded-lg overflow-hidden fixed top-0 left-0 overflow-y-auto max-h-full">
         <Outlet />
       </div>
+
+      <Chat className="fixed top-0 right-0" />
     </div>
   );
 }

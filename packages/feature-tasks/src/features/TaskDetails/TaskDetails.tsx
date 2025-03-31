@@ -12,8 +12,8 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const { data } = useTaskDetails(taskId);
 
   return data ? (
-    <div className="mx-auto max-w-5xl gap-2">
-      <div className="flex-row items-center gap-2">
+    <div className="p-2">
+      <div className="flex flex-row items-center gap-2">
         <Link href="/">
           <ChevronLeft />
         </Link>

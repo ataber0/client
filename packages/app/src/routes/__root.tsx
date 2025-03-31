@@ -10,7 +10,6 @@ import {
   useParams,
   useRouter as useTanStackRouter,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import * as React from "react";
 import { DefaultCatchBoundary } from "~/components/DefaultCatchBoundary";
 import { NotFound } from "~/components/NotFound";
@@ -100,13 +99,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <head>
+        <style>
+          @import
+          url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+        </style>
+
         <HeadContent />
       </head>
       <body>
         <Runtime router={router} linkComponent={Link}>
-          <div className="p-2 flex gap-2 text-lg">{children}</div>
-
-          <TanStackRouterDevtools position="bottom-right" />
+          {children}
 
           <Scripts />
         </Runtime>

@@ -12,7 +12,7 @@ export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
     return (
       <Component
         ref={ref as React.Ref<HTMLParagraphElement>}
-        className={cn("text-gray-900 text-base leading-normal", className)}
+        className={cn("text-on-surface text-base leading-normal", className)}
         {...props}
       >
         {children}

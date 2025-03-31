@@ -1,13 +1,17 @@
 export const theme = {
-  background: "#f9fafb",
-  surface: "#fff",
+  background: "#21262d",
+  surface: "#21262d",
+  onSurface: "#ffffff",
   primary: "#FF4F00",
   secondary: "#501361",
 };
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "../../packages/*/src/**/*.{js,ts,jsx,tsx}",
+  ],
   plugins: [
     // Set a default value on the `:root` element
     ({ addBase }) =>
@@ -15,6 +19,7 @@ export default {
         ":root": {
           "--color-background": theme.background,
           "--color-surface": theme.surface,
+          "--color-on-surface": theme.onSurface,
           "--color-primary": theme.primary,
           "--color-secondary": theme.secondary,
         },
@@ -25,6 +30,7 @@ export default {
       colors: {
         background: "var(--color-background)",
         surface: "var(--color-surface)",
+        "on-surface": "var(--color-on-surface)",
         primary: "var(--color-primary)",
         secondary: "var(--color-secondary)",
       },
