@@ -13,3 +13,4 @@ To run:
 - `pnpm install`
 - `pnpm dev`
 
+and then open http://localhost:3000

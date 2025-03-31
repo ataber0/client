@@ -6,7 +6,6 @@ export type HttpSearchParams = Record<string, string | number | undefined>;
 export type HttpRequestBody = Record<string, unknown>;
 
 const getDevelopmentServerUrl = () => {
-  // return "http://192.168.1.170:8001";
   return "http://localhost:8001";
 };
 
