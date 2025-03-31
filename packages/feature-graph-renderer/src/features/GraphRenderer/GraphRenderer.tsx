@@ -13,8 +13,11 @@ interface GraphRendererProps {
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
   const { data: tasks } = useMyTasks();
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
   const [nodes, setNodes] = useState<Node[]>([]);
+
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
   const { viewport, setViewport, handleStartPan, handlePan, handleEndPan } =
     useViewportControls();
 

@@ -16,13 +16,7 @@ const elk = new elkjs();
 function createElkGraph(tasks: Task[]) {
   const nodes = tasks
     .sort((a, b) => {
-      // First sort by creation date
-      const dateCompare =
-        new Date(a.createdAt) > new Date(b.createdAt) ? 1 : -1;
-      // Then by number of dependencies (nodes with more dependencies go first)
-      const depsCompare =
-        (b.dependencies?.length || 0) - (a.dependencies?.length || 0);
-      return depsCompare || dateCompare;
+      return (b.dependencies?.length || 0) - (a.dependencies?.length || 0);
     })
     .map((task) => ({
       id: task.id,
@@ -85,10 +79,10 @@ export async function positionNodes(tasks: Task[]): Promise<Node[]> {
   const nodes: Node[] = elkLayout.children!.map((elkNode) => ({
     id: elkNode.id,
     label: (elkNode as any).task.name,
-    status: (elkNode as any).task.status,
+    task: (elkNode as any).task,
     position: {
       x: elkNode.x!,
-      y: -elkNode.y!,
+      y: elkNode.y!,
     },
   }));
 

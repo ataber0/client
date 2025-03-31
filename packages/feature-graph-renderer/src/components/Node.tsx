@@ -1,18 +1,20 @@
+import { getStatus } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
 import { Circle } from "react-konva";
 import { Node as NodeType } from "../types/graph.models";
-
 export interface NodeProps {
   node: NodeType;
 }
 
 export const Node = ({ node }: NodeProps) => {
   const router = useRouter();
+  const isSelected = router.params.taskId === node.id;
 
-  const gradient =
-    node.status === "Done"
-      ? { from: "#666666", to: "#888888" } // Gray gradient for completed tasks
-      : { from: "#FF6B9C", to: "#FF8E9E" }; // Pink gradient for active tasks
+  const gradient = {
+    Done: { from: "#4CAF50", to: "#66BB6A" }, // Green gradient for completed tasks
+    Active: { from: "#FF4F00", to: "darkorange" }, // Primary gradient for active tasks
+    Blocked: { from: "#9E9E9E", to: "#BDBDBD" }, // Gray gradient for blocked tasks
+  }[getStatus(node.task)];
 
   return (
     <Circle
@@ -28,6 +30,8 @@ export const Node = ({ node }: NodeProps) => {
       shadowBlur={15}
       shadowOpacity={0.4}
       shadowOffset={{ x: 0, y: 0 }}
+      stroke={isSelected ? "#FFFFFF" : undefined}
+      strokeWidth={isSelected ? 10 : 0}
       onClick={() => {
         router.push("/tasks/" + node.id);
       }}

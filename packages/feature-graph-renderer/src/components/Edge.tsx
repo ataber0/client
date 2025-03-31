@@ -1,3 +1,4 @@
+import { getStatus } from "@campus/feature-tasks/utils";
 import { Line } from "react-konva";
 import { Edge as EdgeType } from "../types/graph.models";
 
@@ -8,23 +9,16 @@ export interface EdgeProps {
 export const Edge = ({ edge }: EdgeProps) => {
   const gradientOffset = 0.5;
 
-  const startX =
-    edge.from.position.x +
-    (edge.to.position.x - edge.from.position.x) * gradientOffset;
-  const startY =
-    edge.from.position.y +
-    (edge.to.position.y - edge.from.position.y) * gradientOffset;
-  const endX =
-    edge.from.position.x +
-    (edge.to.position.x - edge.from.position.x) * ((gradientOffset + 0.9) % 1);
-  const endY =
-    edge.from.position.y +
-    (edge.to.position.y - edge.from.position.y) * ((gradientOffset + 0.9) % 1);
+  const gradientMap = {
+    Done: "#4CAF50", // Green for completed tasks
+    Active: "#FF4F00", // Primary for active tasks
+    Blocked: "#9E9E9E", // Gray for blocked tasks
+  };
 
-  const gradient =
-    edge.from.status === "Done" || edge.to.status === "Done"
-      ? { from: "#666666", to: "#888888" } // Gray gradient for edges involving completed tasks
-      : { from: "#FF6B9C", to: "#FF8E9E" }; // Pink gradient for active edges
+  const gradient = {
+    from: gradientMap[getStatus(edge.from.task)],
+    to: gradientMap[getStatus(edge.to.task)],
+  };
 
   return (
     <Line
@@ -34,8 +28,14 @@ export const Edge = ({ edge }: EdgeProps) => {
         edge.to.position.x,
         edge.to.position.y,
       ]}
-      strokeLinearGradientStartPoint={{ x: startX, y: startY }}
-      strokeLinearGradientEndPoint={{ x: endX, y: endY }}
+      strokeLinearGradientStartPoint={{
+        x: edge.from.position.x,
+        y: edge.from.position.y,
+      }}
+      strokeLinearGradientEndPoint={{
+        x: edge.to.position.x,
+        y: edge.to.position.y,
+      }}
       strokeLinearGradientColorStops={[
         0,
         gradient.from,

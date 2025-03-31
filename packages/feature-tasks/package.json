@@ -10,7 +10,8 @@
     "./data-access": "./src/data-access/public-api.ts",
     "./MyTasks": "./src/features/MyTasks/MyTasks.tsx",
     "./TaskDetails": "./src/features/TaskDetails/TaskDetails.tsx",
-    "./types": "./src/types/task.models.ts"
+    "./types": "./src/types/task.models.ts",
+    "./utils": "./src/utils/task.utils.ts"
   },
   "dependencies": {
     "@campus/runtime": "workspace:*",

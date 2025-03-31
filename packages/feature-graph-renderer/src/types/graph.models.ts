@@ -1,3 +1,5 @@
+import { Task } from "@campus/feature-tasks/types";
+
 export interface Point {
   x: number;
   y: number;
@@ -12,7 +14,7 @@ export interface Node {
   id: string;
   position: Point;
   label: string;
-  status: "Todo" | "Done";
+  task: Task;
 }
 
 export interface Edge {
