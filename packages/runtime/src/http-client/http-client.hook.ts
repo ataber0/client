@@ -45,10 +45,10 @@ export const useHttpClient = () => {
         : "";
       const urlWithParams = `${baseUrl}${url}${stringifiedParams}`;
       return fetch(urlWithParams, { headers }).then((response) =>
-        response.json(),
+        response.json()
       );
     },
-    [headers],
+    [headers]
   );
 
   const post = useCallback(
@@ -59,11 +59,23 @@ export const useHttpClient = () => {
         headers,
       }).then((response) => response.json());
     },
-    [headers],
+    [headers]
+  );
+
+  const put = useCallback(
+    <T = unknown>(url: string, body: HttpRequestBody = {}): Promise<T> => {
+      return fetch(`${baseUrl}${url}`, {
+        method: "put",
+        body: JSON.stringify(body),
+        headers,
+      }).then((response) => response.json());
+    },
+    [headers]
   );
 
   return {
     get,
     post,
+    put,
   };
 };

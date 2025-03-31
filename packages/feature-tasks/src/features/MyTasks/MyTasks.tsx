@@ -1,4 +1,5 @@
 import { cn } from "@campus/ui/cn";
+import { useMemo } from "react";
 import { TaskList } from "../../components/TaskList/TaskList";
 import { useMyTasks } from "../../data-access/my-tasks.data-access";
 
@@ -7,9 +8,24 @@ export interface MyTasksProps {
 }
 
 export const MyTasks = ({ className }: MyTasksProps) => {
-  const { data } = useMyTasks();
+  const { data: tasks } = useMyTasks();
+
+  const activeTasks = useMemo(() => {
+    return (
+      tasks?.filter(
+        (task) =>
+          task.status === "Todo" &&
+          task.dependencies.filter((dependency) => dependency.status !== "Done")
+            .length === 0
+      ) ?? []
+    );
+  }, [tasks]);
+
+  if (!activeTasks) return null;
 
   return (
-    <div className={cn(className)}>{data && <TaskList tasks={data} />}</div>
+    <div className={cn(className)}>
+      {activeTasks && <TaskList tasks={activeTasks} />}
+    </div>
   );
 };

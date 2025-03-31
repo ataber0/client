@@ -8,12 +8,15 @@ export interface ChatPayload extends HttpRequestBody {
 export type ChatResponse = HttpRequestBody & TaskCommand;
 
 export interface TaskCommand {
+  id: string;
   actions: TaskAction[];
+  llmMessage: string;
+  userInput: string;
 }
 
 export interface TaskAction {
-  type: "add_task";
-  data: unknown;
+  actionType: "add_task";
+  actionData: unknown;
 }
 
 export const useChat = () => {

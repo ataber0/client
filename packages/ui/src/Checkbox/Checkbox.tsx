@@ -17,7 +17,7 @@ export const Checkbox = ({
     <input
       type="checkbox"
       className={cn(className)}
-      checked={checked}
+      defaultChecked={checked}
       {...props}
     />
   );
