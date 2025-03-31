@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useMyTasks } from "@campus/feature-tasks/data-access";
+import { useEffect, useMemo, useState } from "react";
 import { Circle, Layer, Line, Stage } from "react-konva";
 import { useViewportControls } from "../../hooks/viewport-controls.hook";
 
@@ -30,33 +31,9 @@ interface GraphRendererProps {
   className?: string;
 }
 
-// Data
-const createNodes = (width: number, height: number): Node[] => [
-  {
-    id: "1",
-    position: { x: width * 0.3, y: height * 0.3 },
-    label: "Node 1",
-    gradient: { from: "#FF6B9C", to: "#FF8E9E" },
-  },
-  {
-    id: "2",
-    position: { x: width * 0.7, y: height * 0.3 },
-    label: "Node 2",
-    gradient: { from: "#B388FF", to: "#D1C4E9" },
-  },
-  {
-    id: "3",
-    position: { x: width * 0.5, y: height * 0.7 },
-    label: "Node 3",
-    gradient: { from: "#E040FB", to: "#FF80AB" },
-  },
-];
-
-const edges: Edge[] = [
-  { from: "1", to: "2", gradient: { from: "#E0E0E0", to: "#FF6B9C" } },
-  { from: "2", to: "3", gradient: { from: "#E0E0E0", to: "#B388FF" } },
-  { from: "3", to: "1", gradient: { from: "#E0E0E0", to: "#E040FB" } },
-];
+// Constants for layout
+const NODE_SPACING = 150; // Space between nodes
+const NODE_RADIUS = 35;
 
 // Custom hook for gradient animation
 const useGradientAnimation = () => {
@@ -76,10 +53,49 @@ const useGradientAnimation = () => {
 };
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
+  const { data: tasks } = useMyTasks();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const gradientOffset = useGradientAnimation();
   const { viewport, setViewport, handleStartPan, handlePan, handleEndPan } =
     useViewportControls();
+
+  const nodes = useMemo<Node[]>(() => {
+    if (!tasks) return [];
+
+    // Create a simple grid layout
+    const cols = Math.ceil(Math.sqrt(tasks.length));
+    return tasks.map((task, index) => ({
+      id: task.id,
+      position: {
+        x: (index % cols) * NODE_SPACING - (cols * NODE_SPACING) / 2,
+        y:
+          Math.floor(index / cols) * NODE_SPACING -
+          (Math.ceil(tasks.length / cols) * NODE_SPACING) / 2,
+      },
+      label: task.name,
+      gradient:
+        task.status === "Done"
+          ? { from: "#666666", to: "#888888" } // Gray gradient for completed tasks
+          : { from: "#FF6B9C", to: "#FF8E9E" }, // Pink gradient for active tasks
+    }));
+  }, [tasks]);
+
+  const edges = useMemo<Edge[]>(() => {
+    const edges: Edge[] = [];
+    for (const task of tasks ?? []) {
+      for (const dependency of task.dependencies ?? []) {
+        edges.push({
+          from: task.id,
+          to: dependency.id,
+          gradient:
+            task.status === "Done" || dependency.status === "Done"
+              ? { from: "#666666", to: "#888888" } // Gray gradient for edges involving completed tasks
+              : { from: "#FF6B9C", to: "#FF8E9E" }, // Pink gradient for active edges
+        });
+      }
+    }
+    return edges;
+  }, [tasks]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -113,8 +129,6 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
       },
     }));
   };
-
-  const nodes = createNodes(dimensions.width, dimensions.height);
 
   return (
     <Stage

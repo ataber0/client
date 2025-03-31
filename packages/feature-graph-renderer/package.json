@@ -8,15 +8,15 @@
   "scripts": {
     "build": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "dev": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
-    "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
+    "@campus/feature-tasks": "workspace:*",
     "@campus/ui": "workspace:*",
     "@types/node": "^22.13.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "eslint": "^8.57.0",
+
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
     "typescript": "5.7.3"

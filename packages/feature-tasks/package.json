@@ -7,8 +7,10 @@
   },
   "exports": {
     "./Chat": "./src/features/Chat/Chat.tsx",
+    "./data-access": "./src/data-access/public-api.ts",
     "./MyTasks": "./src/features/MyTasks/MyTasks.tsx",
-    "./TaskDetails": "./src/features/TaskDetails/TaskDetails.tsx"
+    "./TaskDetails": "./src/features/TaskDetails/TaskDetails.tsx",
+    "./types": "./src/types/task.models.ts"
   },
   "dependencies": {
     "@campus/runtime": "workspace:*",

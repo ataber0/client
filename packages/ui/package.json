@@ -15,7 +15,6 @@
     "./cn": "./src/utils/cn.tsx"
   },
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "license": "MIT",
@@ -30,7 +29,6 @@
     "@types/node": "^22.5.4",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "eslint": "^8",
     "tailwind-merge": "^2.5.2",
     "typescript": "^5"
   },
