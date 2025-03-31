@@ -25,7 +25,7 @@ function RouteComponent() {
     <div>
       <GraphRenderer />
 
-      <div className="bg-surface rounded-lg overflow-hidden fixed top-0 left-0 overflow-y-auto max-h-full">
+      <div className="bg-surface rounded-lg overflow-hidden fixed top-0 left-0 overflow-y-auto max-h-full w-96">
         <Outlet />
       </div>
 

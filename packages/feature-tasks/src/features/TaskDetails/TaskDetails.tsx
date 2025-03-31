@@ -29,7 +29,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
           <TaskList
             tasks={data.dependencies}
-            header={({ task }) => <Text>{task.name}</Text>}
+            header={({ task }) => <Text className="text-sm">{task.name}</Text>}
           />
         </>
       )}
@@ -40,7 +40,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
           <TaskList
             tasks={data.dependents}
-            header={({ task }) => <Text>{task.name}</Text>}
+            header={({ task }) => <Text className="text-sm">{task.name}</Text>}
           />
         </>
       )}

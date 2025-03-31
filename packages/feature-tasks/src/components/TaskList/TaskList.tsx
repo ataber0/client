@@ -48,7 +48,7 @@ const TaskListItem = ({ task, index, header }: TaskListItemProps) => {
 
       {header?.({ task, index }) || (
         <div className="flex-1">
-          <Text className="font-semibold">{task.name}</Text>
+          <Text className="font-semibold text-sm">{task.name}</Text>
 
           {task.dependents.length > 0 && (
             <Text className="text-xs text-gray-500">

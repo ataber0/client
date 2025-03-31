@@ -1,101 +1,49 @@
 import { useMyTasks } from "@campus/feature-tasks/data-access";
 import { useEffect, useMemo, useState } from "react";
-import { Circle, Layer, Line, Stage } from "react-konva";
+import { Layer, Stage } from "react-konva";
+import { Edge as EdgeComponent } from "../../components/Edge";
+import { Node as NodeComponent } from "../../components/Node";
 import { useViewportControls } from "../../hooks/viewport-controls.hook";
-
-// Types
-interface Point {
-  x: number;
-  y: number;
-}
-
-interface Gradient {
-  from: string;
-  to: string;
-}
-
-interface Node {
-  id: string;
-  position: Point;
-  label: string;
-  gradient: Gradient;
-}
-
-interface Edge {
-  from: string;
-  to: string;
-  gradient: Gradient;
-}
+import { Edge, Node } from "../../types/graph.models";
+import { positionNodes } from "../../utils/positioning.utils";
 
 interface GraphRendererProps {
   className?: string;
 }
 
-// Constants for layout
-const NODE_SPACING = 150; // Space between nodes
-const NODE_RADIUS = 35;
-
-// Custom hook for gradient animation
-const useGradientAnimation = () => {
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    let animationFrameId: number;
-    const animate = () => {
-      setOffset((prev) => (prev + 0.005) % 1);
-      animationFrameId = requestAnimationFrame(animate);
-    };
-    animate();
-    return () => cancelAnimationFrame(animationFrameId);
-  }, []);
-
-  return offset;
-};
-
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
   const { data: tasks } = useMyTasks();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const gradientOffset = useGradientAnimation();
+  const [nodes, setNodes] = useState<Node[]>([]);
   const { viewport, setViewport, handleStartPan, handlePan, handleEndPan } =
     useViewportControls();
 
-  const nodes = useMemo<Node[]>(() => {
-    if (!tasks) return [];
+  // Update node positions when tasks change
+  useEffect(() => {
+    if (!tasks) return;
 
-    // Create a simple grid layout
-    const cols = Math.ceil(Math.sqrt(tasks.length));
-    return tasks.map((task, index) => ({
-      id: task.id,
-      position: {
-        x: (index % cols) * NODE_SPACING - (cols * NODE_SPACING) / 2,
-        y:
-          Math.floor(index / cols) * NODE_SPACING -
-          (Math.ceil(tasks.length / cols) * NODE_SPACING) / 2,
-      },
-      label: task.name,
-      gradient:
-        task.status === "Done"
-          ? { from: "#666666", to: "#888888" } // Gray gradient for completed tasks
-          : { from: "#FF6B9C", to: "#FF8E9E" }, // Pink gradient for active tasks
-    }));
+    const updatePositions = async () => {
+      const positionedNodes = await positionNodes(tasks);
+      setNodes(positionedNodes);
+    };
+
+    updatePositions();
   }, [tasks]);
 
   const edges = useMemo<Edge[]>(() => {
+    if (!tasks) return [];
     const edges: Edge[] = [];
-    for (const task of tasks ?? []) {
+    for (const task of tasks) {
       for (const dependency of task.dependencies ?? []) {
-        edges.push({
-          from: task.id,
-          to: dependency.id,
-          gradient:
-            task.status === "Done" || dependency.status === "Done"
-              ? { from: "#666666", to: "#888888" } // Gray gradient for edges involving completed tasks
-              : { from: "#FF6B9C", to: "#FF8E9E" }, // Pink gradient for active edges
-        });
+        const fromNode = nodes.find((n) => n.id === task.id);
+        const toNode = nodes.find((n) => n.id === dependency.id);
+        if (fromNode && toNode) {
+          edges.push({ from: fromNode, to: toNode });
+        }
       }
     }
     return edges;
-  }, [tasks]);
+  }, [tasks, nodes]);
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -149,79 +97,12 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
       y={viewport.offset.y}
     >
       <Layer>
-        {edges.map((edge, i) => {
-          const fromNode = nodes.find((n) => n.id === edge.from);
-          const toNode = nodes.find((n) => n.id === edge.to);
-          if (!fromNode || !toNode) return null;
-
-          const startX =
-            fromNode.position.x +
-            (toNode.position.x - fromNode.position.x) * gradientOffset;
-          const startY =
-            fromNode.position.y +
-            (toNode.position.y - fromNode.position.y) * gradientOffset;
-          const endX =
-            fromNode.position.x +
-            (toNode.position.x - fromNode.position.x) *
-              ((gradientOffset + 0.9) % 1);
-          const endY =
-            fromNode.position.y +
-            (toNode.position.y - fromNode.position.y) *
-              ((gradientOffset + 0.9) % 1);
-
-          return (
-            <Line
-              key={`edge-${i}`}
-              points={[
-                fromNode.position.x,
-                fromNode.position.y,
-                toNode.position.x,
-                toNode.position.y,
-              ]}
-              strokeLinearGradientStartPoint={{ x: startX, y: startY }}
-              strokeLinearGradientEndPoint={{ x: endX, y: endY }}
-              strokeLinearGradientColorStops={[
-                0,
-                edge.gradient.from,
-                0.2,
-                edge.gradient.from,
-                0.8,
-                edge.gradient.to,
-                1,
-                edge.gradient.to,
-              ]}
-              strokeWidth={4}
-              opacity={0.9}
-              lineCap="round"
-              lineJoin="round"
-              shadowColor={edge.gradient.to}
-              shadowBlur={12}
-              shadowOpacity={0.3}
-              globalCompositeOperation="lighter"
-            />
-          );
-        })}
+        {edges.map((edge, i) => (
+          <EdgeComponent key={i} edge={edge} />
+        ))}
 
         {nodes.map((node) => (
-          <Circle
-            key={node.id}
-            x={node.position.x}
-            y={node.position.y}
-            radius={35}
-            fillLinearGradientStartPoint={{ x: -35, y: -35 }}
-            fillLinearGradientEndPoint={{ x: 35, y: 35 }}
-            fillLinearGradientColorStops={[
-              0,
-              node.gradient.from,
-              1,
-              node.gradient.to,
-            ]}
-            opacity={1}
-            shadowColor={node.gradient.to}
-            shadowBlur={15}
-            shadowOpacity={0.4}
-            shadowOffset={{ x: 0, y: 0 }}
-          />
+          <NodeComponent key={node.id} node={node} />
         ))}
       </Layer>
     </Stage>

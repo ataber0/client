@@ -3,6 +3,8 @@ export interface TaskBase {
   name: string;
   status: "Todo" | "Done";
   imageUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Task extends TaskBase {
