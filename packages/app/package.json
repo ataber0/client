@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@campus/feature-auth": "workspace:*",
+    "@campus/feature-graph-renderer": "workspace:*",
     "@campus/runtime": "workspace:*",
     "@campus/feature-tasks": "workspace:*",
     "@tanstack/react-router": "^1.114.29",

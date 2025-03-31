@@ -1,3 +1,4 @@
+import { GraphRenderer } from "@campus/feature-graph-renderer/GraphRenderer";
 import { useAuthToken } from "@campus/runtime/auth";
 import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 
@@ -21,8 +22,11 @@ function RouteComponent() {
 
   return (
     <div>
-      test!!!
-      <Outlet />
+      <GraphRenderer />
+
+      <div className="fixed top-0 left-0">
+        <Outlet />
+      </div>
     </div>
   );
 }
