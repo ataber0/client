@@ -5,7 +5,7 @@ import { Node } from "../types/graph.models";
 // Constants for layout
 const NODE_SIZE = 50; // Size of each node (diameter)
 const MIN_SPACING = 100; // Minimum spacing between nodes
-const BASE_SPACING = 200; // Base spacing for the layout
+const BASE_SPACING = 100; // Base spacing for the layout
 
 // Initialize ELK
 const elk = new elkjs();
@@ -30,39 +30,6 @@ function createElkGraph(tasks: Task[]) {
     }))
   );
 
-  // Find root nodes (nodes with no incoming edges)
-  const leafNodeIds = tasks
-    .filter(
-      (task) => !tasks.some((t) => t.dependents.some((d) => d.id === task.id))
-    )
-    .map((task) => task.id);
-
-  // Add virtual root node
-  const virtualRootId = "virtual-root";
-  nodes.unshift({
-    id: virtualRootId,
-    task: {
-      id: virtualRootId,
-      name: "",
-      dependencies: [],
-      dependents: [],
-      description: "",
-      status: "TODO",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as unknown as Task,
-    size: 0,
-  });
-
-  // Add edges from virtual root to all root nodes
-  leafNodeIds.forEach((rootId) => {
-    edges.push({
-      id: `${virtualRootId}-${rootId}`,
-      sources: [virtualRootId],
-      targets: [rootId],
-    });
-  });
-
   // Calculate dynamic spacing based on number of nodes
   const nodeCount = nodes.length;
   const spacingMultiplier = Math.min(1.5, Math.max(1, Math.log10(nodeCount)));
@@ -76,16 +43,8 @@ function createElkGraph(tasks: Task[]) {
       "elk.direction": "UP",
       "elk.spacing.nodeNode": nodeSpacing.toString(),
       "elk.layered.spacing.baseValue": baseSpacing.toString(),
-      // Additional options for stability
-      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-      "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
-      "elk.layered.mergeEdges": "true",
-      "elk.layered.considerModelOrder.strategy": "NODES_AND_EDGES",
-      "elk.layered.cycleBreaking.strategy": "DEPTH_FIRST",
-      // Prevent edge routing through nodes
-      "elk.edgeRouting": "ORTHOGONAL",
-      "elk.spacing.edgeNode": (nodeSpacing * 1.5).toString(),
-      "elk.spacing.edgeEdge": (nodeSpacing * 0.5).toString(),
+      "elk.layered.spacing.edgeNode": (nodeSpacing * 2).toString(),
+      "elk.layered.spacing.edgeEdge": (nodeSpacing * 5).toString(),
     },
     children: nodes,
     edges,
@@ -102,19 +61,17 @@ export async function positionNodes(tasks: Task[]): Promise<Node[]> {
   // Compute layout
   const elkLayout = await elk.layout(elkGraph);
 
-  // Convert ELK layout back to our node format, excluding the virtual root
-  const nodes: Node[] = elkLayout
-    .children!.filter((elkNode) => elkNode.id !== "virtual-root")
-    .map((elkNode) => ({
-      id: elkNode.id,
-      label: (elkNode as any).task.name,
-      task: (elkNode as any).task,
-      size: elkNode.size,
-      position: {
-        x: elkNode.x!,
-        y: elkNode.y!,
-      },
-    }));
+  // Convert ELK layout back to our node format
+  const nodes: Node[] = elkLayout.children!.map((elkNode) => ({
+    id: elkNode.id,
+    label: (elkNode as any).task.name,
+    task: (elkNode as any).task,
+    size: elkNode.size,
+    position: {
+      x: elkNode.x!,
+      y: elkNode.y!,
+    },
+  }));
 
   // Center the entire graph
   const maxX = Math.max(...nodes.map((n) => n.position.x));
