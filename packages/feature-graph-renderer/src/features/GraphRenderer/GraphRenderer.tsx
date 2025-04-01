@@ -1,9 +1,10 @@
 import { useMyTasks } from "@campus/feature-tasks/data-access";
+import { getStatusColor } from "@campus/feature-tasks/utils";
+import { useRouter } from "@campus/runtime/router";
+import { ReactFlow } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
-import { Layer, Stage } from "react-konva";
-import { Edge as EdgeComponent } from "../../components/Edge";
-import { Node as NodeComponent } from "../../components/Node";
-import { useViewportControls } from "../../hooks/viewport-controls.hook";
+import { Edge as CustomEdge } from "../../components/Edge";
 import { Edge, Node } from "../../types/graph.models";
 import { positionNodes } from "../../utils/positioning.utils";
 
@@ -12,14 +13,11 @@ interface GraphRendererProps {
 }
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
+  const router = useRouter();
+
   const { data: tasks } = useMyTasks();
 
   const [nodes, setNodes] = useState<Node[]>([]);
-
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  const { viewport, setViewport, handleStartPan, handlePan, handleEndPan } =
-    useViewportControls();
 
   // Update node positions when tasks change
   useEffect(() => {
@@ -48,66 +46,38 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
     return edges;
   }, [tasks, nodes]);
 
-  useEffect(() => {
-    const updateDimensions = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
-  }, []);
-
-  const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
-    const stage = e.currentTarget as HTMLDivElement;
-    const rect = stage.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-
-    const scaleFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    const newScale = Math.max(0.1, Math.min(5, viewport.scale * scaleFactor));
-    const scaleDiff = newScale - viewport.scale;
-
-    setViewport((prev) => ({
-      scale: newScale,
-      offset: {
-        x: prev.offset.x - ((mouseX - prev.offset.x) * scaleDiff) / prev.scale,
-        y: prev.offset.y - ((mouseY - prev.offset.y) * scaleDiff) / prev.scale,
-      },
-    }));
-  };
-
   return (
-    <Stage
-      width={dimensions.width}
-      height={dimensions.height}
-      className={className}
-      style={{ backgroundColor: "#1a1a1a" }}
-      onMouseDown={(e) =>
-        handleStartPan({ x: e.evt.clientX, y: e.evt.clientY })
-      }
-      onMouseMove={(e) => handlePan({ x: e.evt.clientX, y: e.evt.clientY })}
-      onMouseUp={handleEndPan}
-      onMouseLeave={handleEndPan}
-      onWheel={(e) => handleWheel(e.evt)}
-      scaleX={viewport.scale}
-      scaleY={viewport.scale}
-      x={viewport.offset.x}
-      y={viewport.offset.y}
-    >
-      <Layer>
-        {edges.map((edge, i) => (
-          <EdgeComponent key={i} edge={edge} />
-        ))}
-
-        {nodes.map((node) => (
-          <NodeComponent key={node.id} node={node} />
-        ))}
-      </Layer>
-    </Stage>
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <ReactFlow
+        minZoom={0.1}
+        nodes={nodes.map((node) => ({
+          id: node.id,
+          data: { label: node.task.name },
+          position: { x: node.position.x, y: node.position.y },
+          style: {
+            width: 100,
+            height: 100,
+            backgroundColor: getStatusColor(node.task),
+          },
+          task: node.task,
+        }))}
+        edges={edges.map((edge) => ({
+          id: `${edge.from.id}-${edge.to.id}`,
+          source: edge.to.id,
+          target: edge.from.id,
+          animated: true,
+          type: "smoothstep",
+          data: {
+            color: getStatusColor(edge.to.task),
+          },
+        }))}
+        edgeTypes={{
+          smoothstep: CustomEdge,
+        }}
+        onNodeClick={(e, node) => {
+          router.push(`/tasks/${node.task.id}`);
+        }}
+      />
+    </div>
   );
 };

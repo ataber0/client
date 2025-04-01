@@ -13,3 +13,9 @@ export const getStatus = (task: Task) => {
   if (isActive(task)) return "Active";
   return "Blocked";
 };
+
+export const getStatusColor = (task: Task) => {
+  if (task.status === "Done") return "green";
+  if (isActive(task)) return "darkorange";
+  return "gray";
+};
