@@ -3,38 +3,29 @@ import { cn } from "../utils/cn";
 
 export type ButtonVariant = "default" | "outline" | "text" | "cta";
 
+export type ButtonColor = "default" | "danger";
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   className?: string;
   variant?: ButtonVariant;
+  color?: ButtonColor;
   textClassName?: string;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { children, className, textClassName, variant = "default", ...props },
+    {
+      children,
+      className,
+      textClassName,
+      variant = "default",
+      color = "default",
+      ...props
+    },
     ref
   ) => {
-    let content = children;
-    if (typeof content === "string") {
-      content = (
-        <span
-          className={cn(
-            "font-semibold",
-            {
-              "text-white": variant === "default" || variant === "cta",
-              "opacity-60": props.disabled && variant !== "cta",
-              "opacity-90": props.disabled && variant === "cta",
-            },
-            textClassName
-          )}
-        >
-          {children}
-        </span>
-      );
-    }
-
     return (
       <button
         ref={ref}
@@ -49,12 +40,13 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "bg-gradient-to-r from-[darkorange] to-[rgb(255,79,0)]":
               variant === "cta",
             "opacity-80": props.disabled && variant === "cta",
+            "text-red-500": color === "danger",
           },
           className
         )}
         {...props}
       >
-        {content}
+        {children}
       </button>
     );
   }

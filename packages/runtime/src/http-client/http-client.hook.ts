@@ -72,9 +72,24 @@ export const useHttpClient = () => {
     [headers]
   );
 
+  const httpDelete = useCallback(
+    async <T = unknown>(url: string, params?: HttpSearchParams): Promise<T> => {
+      const stringifiedParams = params
+        ? getUrlSearchParams(params).toString()
+        : "";
+      const urlWithParams = `${baseUrl}${url}${stringifiedParams}`;
+      return fetch(urlWithParams, {
+        method: "delete",
+        headers,
+      }).then((response) => response.json());
+    },
+    [headers]
+  );
+
   return {
     get,
     post,
     put,
+    delete: httpDelete,
   };
 };

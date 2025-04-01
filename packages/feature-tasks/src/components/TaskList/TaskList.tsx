@@ -1,11 +1,10 @@
-import { Checkbox } from "@campus/ui/Checkbox";
 import { cn } from "@campus/ui/cn";
 import { ChevronRight } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
 import { Text } from "@campus/ui/Text";
 import { ReactNode } from "react";
-import { useCompleteTask } from "../../data-access/complete-task.data-access";
 import { Task } from "../../types/task.models";
+import { TaskCheckbox } from "../TaskCheckbox/TaskCheckbox";
 
 export interface TaskListProps {
   tasks: Task[];
@@ -30,21 +29,13 @@ interface TaskListItemProps {
 }
 
 const TaskListItem = ({ task, index, header }: TaskListItemProps) => {
-  const { mutate: completeTask } = useCompleteTask();
-
   return (
     <Link
       key={task.id}
       href={`/tasks/${task.id}`}
       className="flex flex-row items-center p-4 border-b border-gray-900"
     >
-      <Checkbox
-        className="mr-3"
-        color="#FF4F00"
-        value={task.status === "Done"}
-        onChange={() => completeTask(task.id)}
-        onClick={(e) => e.stopPropagation()}
-      />
+      <TaskCheckbox task={task} className="mr-3" />
 
       {header?.({ task, index }) || (
         <div className="flex-1">

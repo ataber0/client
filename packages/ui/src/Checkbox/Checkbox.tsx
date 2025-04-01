@@ -7,17 +7,15 @@ export interface CheckboxProps
   value?: boolean;
 }
 
-export const Checkbox = ({
-  className,
-  value,
-  checked = value,
-  ...props
-}: CheckboxProps) => {
+export const Checkbox = ({ className, value, ...props }: CheckboxProps) => {
   return (
     <input
       type="checkbox"
-      className={cn(className)}
-      defaultChecked={checked}
+      className={cn(
+        "h-[18px] w-[18px] min-h-[18px] min-w-[18px] rounded-sm disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      checked={value}
       {...props}
     />
   );

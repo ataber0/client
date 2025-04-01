@@ -18,8 +18,8 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
       <Handle type="source" position={Position.Bottom} isConnectable={true} />
       <div
         className={cn(
-          "flex items-center justify-center p-6 rounded-xl border-4 border-gray-500",
-          params.taskId === data.task.id && "border-white border-8"
+          "flex items-center justify-center p-6 rounded-xl border-[14px] border-gray-700",
+          params.taskId === data.task.id && "border-white"
         )}
         style={{
           backgroundColor: getStatusColor(data.task),
@@ -29,7 +29,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
       >
         <Text
           className={cn(
-            "text-2xl text-wrap text-center transition-opacity duration-300",
+            "text-xl text-wrap text-center transition-opacity duration-300",
             zoom < 0.2 && "opacity-0"
           )}
         >
