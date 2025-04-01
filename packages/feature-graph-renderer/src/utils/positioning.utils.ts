@@ -3,9 +3,10 @@ import elkjs from "elkjs/lib/elk.bundled.js";
 import { Node } from "../types/graph.models";
 
 // Constants for layout
-const NODE_SIZE = 50; // Size of each node (diameter)
-const MIN_SPACING = 100; // Minimum spacing between nodes
-const BASE_SPACING = 100; // Base spacing for the layout
+const NODE_SIZE = 200; // Size of each node (diameter)
+const BASE_SPACING = 400; // Base spacing for the layout
+const OFFSET_X = -8; // Offset for the layout
+const OFFSET_Y = -8; // Offset for the layout
 
 // Initialize ELK
 const elk = new elkjs();
@@ -31,20 +32,17 @@ function createElkGraph(tasks: Task[]) {
   );
 
   // Calculate dynamic spacing based on number of nodes
-  const nodeCount = nodes.length;
-  const spacingMultiplier = Math.min(1.5, Math.max(1, Math.log10(nodeCount)));
-  const nodeSpacing = MIN_SPACING * spacingMultiplier;
-  const baseSpacing = BASE_SPACING * spacingMultiplier;
+  const baseSpacing = BASE_SPACING * 1;
 
   return {
     id: "root",
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": "UP",
-      "elk.spacing.nodeNode": nodeSpacing.toString(),
+      "elk.spacing.nodeNode": baseSpacing.toString(),
       "elk.layered.spacing.baseValue": baseSpacing.toString(),
-      "elk.layered.spacing.edgeNode": (nodeSpacing * 2).toString(),
-      "elk.layered.spacing.edgeEdge": (nodeSpacing * 5).toString(),
+      "elk.layered.spacing.edgeNode": (baseSpacing * 2).toString(),
+      "elk.layered.spacing.edgeEdge": (baseSpacing * 5).toString(),
     },
     children: nodes,
     edges,
@@ -80,8 +78,8 @@ export async function positionNodes(tasks: Task[]): Promise<Node[]> {
   return nodes.map((node) => ({
     ...node,
     position: {
-      x: node.position.x - maxX / 2,
-      y: node.position.y - maxY / 2,
+      x: node.position.x - maxX / 2 + OFFSET_X,
+      y: node.position.y - maxY / 2 + OFFSET_Y,
     },
   }));
 }

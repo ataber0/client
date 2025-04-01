@@ -1,19 +1,14 @@
-import { BaseEdge, Position, getSmoothStepPath } from "@xyflow/react";
+import {
+  BaseEdge,
+  Edge,
+  EdgeProps,
+  getSmoothStepPath,
+  useViewport,
+} from "@xyflow/react";
 
-export interface EdgeProps {
-  id: string;
-  sourceX: number;
-  sourceY: number;
-  targetX: number;
-  targetY: number;
-  sourcePosition: Position;
-  targetPosition: Position;
-  data: {
-    color: string;
-  };
-}
+type TaskEdge = Edge<{ color: string }, "taskEdge">;
 
-export const Edge = ({
+export const TaskEdge = ({
   sourceX,
   sourceY,
   targetX,
@@ -21,7 +16,9 @@ export const Edge = ({
   sourcePosition,
   targetPosition,
   data,
-}: EdgeProps) => {
+}: EdgeProps<TaskEdge>) => {
+  const { zoom } = useViewport();
+
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -33,6 +30,15 @@ export const Edge = ({
   });
 
   return (
-    <BaseEdge path={edgePath} style={{ stroke: data.color, strokeWidth: 2 }} />
+    <>
+      <BaseEdge
+        path={edgePath}
+        style={{
+          opacity: 0.5,
+          stroke: data?.color,
+          strokeWidth: 10 / zoom,
+        }}
+      />
+    </>
   );
 };

@@ -1,16 +1,25 @@
 import { useMyTasks } from "@campus/feature-tasks/data-access";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
-import { ReactFlow } from "@xyflow/react";
+import { Background, BackgroundVariant, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
-import { Edge as CustomEdge } from "../../components/Edge";
+import { TaskEdge } from "../../components/Edge";
+import { TaskNode } from "../../components/Node";
 import { Edge, Node } from "../../types/graph.models";
 import { positionNodes } from "../../utils/positioning.utils";
 
 interface GraphRendererProps {
   className?: string;
 }
+
+const nodeTypes = {
+  task: TaskNode,
+};
+
+const edgeTypes = {
+  taskEdge: TaskEdge,
+};
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
   const router = useRouter();
@@ -47,37 +56,39 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
   }, [tasks, nodes]);
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div className={className} style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
         minZoom={0.1}
         nodes={nodes.map((node) => ({
           id: node.id,
-          data: { label: node.task.name },
+          type: "task",
+          data: { task: node.task },
           position: { x: node.position.x, y: node.position.y },
-          style: {
-            width: 100,
-            height: 100,
-            backgroundColor: getStatusColor(node.task),
-          },
           task: node.task,
         }))}
         edges={edges.map((edge) => ({
           id: `${edge.from.id}-${edge.to.id}`,
           source: edge.to.id,
           target: edge.from.id,
-          animated: true,
-          type: "smoothstep",
+          type: "taskEdge",
           data: {
             color: getStatusColor(edge.to.task),
           },
         }))}
-        edgeTypes={{
-          smoothstep: CustomEdge,
-        }}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onNodeClick={(e, node) => {
           router.push(`/tasks/${node.task.id}`);
         }}
-      />
+      >
+        <Background
+          gap={200}
+          size={10}
+          lineWidth={1}
+          color="darkorange"
+          variant={BackgroundVariant.Cross}
+        />
+      </ReactFlow>
     </div>
   );
 };
