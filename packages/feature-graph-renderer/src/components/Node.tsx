@@ -14,7 +14,12 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
 
   return (
     <>
-      <Handle type="target" position={Position.Top} isConnectable={true} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        isConnectable={true}
+        style={{ width: 15, height: 15 }}
+      />
       <Handle type="source" position={Position.Bottom} isConnectable={true} />
       <div
         className={cn(

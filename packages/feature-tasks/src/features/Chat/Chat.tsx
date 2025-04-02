@@ -25,12 +25,7 @@ export const Chat = ({ className }: ChatProps) => {
   };
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-6 px-2 pt-2 bg-surface rounded-lg w-96 h-full overflow-y-auto",
-        className
-      )}
-    >
+    <div className={cn("flex flex-col gap-6 px-2 pt-2", className)}>
       {responses.map((response) => (
         <div key={response.message.id} className="flex flex-col gap-4">
           <Text className="border-on-surface border p-2 rounded-lg text-sm">

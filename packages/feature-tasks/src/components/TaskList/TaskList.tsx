@@ -3,8 +3,8 @@ import { ChevronRight } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
 import { Text } from "@campus/ui/Text";
 import { ReactNode } from "react";
+import { TaskCheckbox } from "../../features/TaskCheckbox/TaskCheckbox";
 import { Task } from "../../types/task.models";
-import { TaskCheckbox } from "../TaskCheckbox/TaskCheckbox";
 
 export interface TaskListProps {
   tasks: Task[];

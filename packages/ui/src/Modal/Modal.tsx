@@ -34,7 +34,7 @@ export const Modal: React.FC<ModalProps> = ({
   const handleClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     const dialogDimensions = e.currentTarget.getBoundingClientRect();
     if (
-      e.clientX < dialogDimensions.left ||
+      (e.type === "click" && e.clientX < dialogDimensions.left) ||
       e.clientX > dialogDimensions.right ||
       e.clientY < dialogDimensions.top ||
       e.clientY > dialogDimensions.bottom
@@ -55,7 +55,7 @@ export const Modal: React.FC<ModalProps> = ({
         className
       )}
       onClose={onClose}
-      onClick={handleClick}
+      onMouseUp={handleClick}
     >
       <div className="flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-600">

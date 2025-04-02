@@ -20,3 +20,10 @@ export interface UpdateTaskPayload extends HttpRequestBody {
   description?: string;
   status?: "Todo" | "Done";
 }
+
+export interface CreateTaskPayload extends HttpRequestBody {
+  name: string;
+  description?: string;
+  dependencyId?: string;
+  dependentId?: string;
+}
