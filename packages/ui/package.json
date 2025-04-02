@@ -10,6 +10,7 @@
     "./Form": "./src/Form/Form.tsx",
     "./Icon": "./src/Icon/public-api.ts",
     "./Link": "./src/Link/Link.tsx",
+    "./Modal": "./src/Modal/Modal.tsx",
     "./Text": "./src/Text/Text.tsx",
     "./TextArea": "./src/TextArea/TextArea.tsx",
     "./TextInput": "./src/TextInput/TextInput.tsx",

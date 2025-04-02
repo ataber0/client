@@ -41,6 +41,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               variant === "cta",
             "opacity-80": props.disabled && variant === "cta",
             "text-red-500": color === "danger",
+            "p-1": variant === "text",
           },
           className
         )}
