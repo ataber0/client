@@ -2,16 +2,21 @@ import { HttpRequestBody, useHttpClient } from "@campus/runtime/http-client";
 import { queryClient, useMutation } from "@campus/runtime/query";
 
 export interface ChatPayload extends HttpRequestBody {
-  message: string;
+  userInput: string;
 }
 
-export type ChatResponse = HttpRequestBody & TaskCommand;
+export interface ChatResponse extends HttpRequestBody {
+  message: {
+    id: string;
+    content: string;
+  };
+  userInput: string;
+  taskCommand: TaskCommand;
+}
 
 export interface TaskCommand {
   id: string;
   actions: TaskAction[];
-  llmMessage: string;
-  userInput: string;
 }
 
 export interface TaskAction {
@@ -24,7 +29,7 @@ export const useChat = () => {
 
   return useMutation({
     mutationFn: (payload: ChatPayload) =>
-      post<ChatResponse>("/api/tasks/chat/", payload),
+      post<ChatResponse>("/api/reasoning/chat/", payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
         predicate: (query) => {

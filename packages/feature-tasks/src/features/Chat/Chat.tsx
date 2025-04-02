@@ -4,7 +4,7 @@ import { Loader } from "@campus/ui/Icon";
 import { Text } from "@campus/ui/Text";
 import { TextArea } from "@campus/ui/TextArea";
 import { useState } from "react";
-import { TaskCommand, useChat } from "../../data-access/chat.data-access";
+import { ChatResponse, useChat } from "../../data-access/chat.data-access";
 
 export interface ChatProps {
   className?: string;
@@ -13,15 +13,15 @@ export interface ChatProps {
 export const Chat = ({ className }: ChatProps) => {
   const { mutateAsync, isPending } = useChat();
 
-  const [taskCommands, setTaskCommands] = useState<TaskCommand[]>([]);
+  const [responses, setResponses] = useState<ChatResponse[]>([]);
 
-  const [message, setMessage] = useState("");
+  const [userInput, setUserInput] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await mutateAsync({ message });
-    setTaskCommands((existingCommands) => [...existingCommands, response]);
-    setMessage("");
+    const response = await mutateAsync({ userInput });
+    setResponses((existingResponses) => [...existingResponses, response]);
+    setUserInput("");
   };
 
   return (
@@ -31,20 +31,20 @@ export const Chat = ({ className }: ChatProps) => {
         className
       )}
     >
-      {taskCommands.map((command) => (
-        <div key={command.id} className="flex flex-col gap-4">
+      {responses.map((response) => (
+        <div key={response.message.id} className="flex flex-col gap-4">
           <Text className="border-on-surface border p-2 rounded-lg text-sm">
-            {command.userInput}
+            {response.userInput}
           </Text>
 
-          <Text>{command.llmMessage}</Text>
+          <Text>{response.message.content}</Text>
         </div>
       ))}
 
       <form className="bg-surface sticky bottom-0" onSubmit={handleSubmit}>
         <TextArea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
         />
 
         <ButtonRow className="mt-2">
