@@ -3,6 +3,7 @@ import { queryClient, useMutation } from "@campus/runtime/query";
 
 export interface ChatPayload extends HttpRequestBody {
   userInput: string;
+  selectedTaskIds: string[];
 }
 
 export interface ChatResponse extends HttpRequestBody {

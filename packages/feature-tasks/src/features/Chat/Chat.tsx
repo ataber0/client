@@ -1,3 +1,4 @@
+import { useRouter } from "@campus/runtime/router";
 import { ButtonRow } from "@campus/ui/ButtonRow";
 import { cn } from "@campus/ui/cn";
 import { Loader } from "@campus/ui/Icon";
@@ -11,6 +12,8 @@ export interface ChatProps {
 }
 
 export const Chat = ({ className }: ChatProps) => {
+  const { params } = useRouter();
+
   const { mutateAsync, isPending } = useChat();
 
   const [responses, setResponses] = useState<ChatResponse[]>([]);
@@ -19,7 +22,10 @@ export const Chat = ({ className }: ChatProps) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await mutateAsync({ userInput });
+    const response = await mutateAsync({
+      userInput,
+      selectedTaskIds: params.taskId ? [params.taskId as string] : [],
+    });
     setResponses((existingResponses) => [...existingResponses, response]);
     setUserInput("");
   };
