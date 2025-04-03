@@ -15,13 +15,15 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
 
   const { mutate: createDependency } = useCreateDependency();
 
+  const handleSize = 25;
+
   return (
     <>
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={true}
-        style={{ width: 25, height: 25 }}
+        style={{ width: handleSize, height: handleSize }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,
@@ -33,7 +35,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         type="source"
         position={Position.Bottom}
         isConnectable={true}
-        style={{ width: 25, height: 25 }}
+        style={{ width: handleSize, height: handleSize }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,

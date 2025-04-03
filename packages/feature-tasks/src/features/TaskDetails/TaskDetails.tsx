@@ -64,12 +64,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           <Text className="pl-8 text-sm">{data.description}</Text>
         )}
 
+        <hr className="border-gray-600" />
+
         <SubTaskList
           type="dependency"
           task={data}
           tasks={data.dependencies}
           header="Prerequisites"
         />
+
+        <hr className="border-gray-600" />
 
         <SubTaskList
           type="dependent"
