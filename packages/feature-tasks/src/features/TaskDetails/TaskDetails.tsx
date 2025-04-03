@@ -111,6 +111,8 @@ const SubTaskList = ({
 
   const [showCompleted, setShowCompleted] = useState(false);
 
+  const displayTasks = showCompleted ? tasks : uncompletedTasks;
+
   const { mutateAsync: removeDependency } = useRemoveDependency();
 
   return (
@@ -136,7 +138,7 @@ const SubTaskList = ({
         )}
       </div>
 
-      {tasks.map((childTask) => (
+      {displayTasks.map((childTask) => (
         <Link
           href={`/tasks/${childTask.id}`}
           className="flex gap-3 items-center"
