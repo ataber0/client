@@ -1,7 +1,7 @@
 import { useMyTasks } from "@campus/feature-tasks/data-access";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
-import { Background, BackgroundVariant, ReactFlow } from "@xyflow/react";
+import { Background, ReactFlow, useViewport } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
 import { TaskEdge } from "../../components/Edge";
@@ -58,7 +58,8 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
   return (
     <div className={className} style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
-        minZoom={0.1}
+        maxZoom={100}
+        minZoom={0.2}
         nodes={nodes.map((node) => ({
           id: node.id,
           type: "task",
@@ -81,14 +82,22 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
           router.push(`/tasks/${node.task.id}`);
         }}
       >
-        <Background
-          gap={200}
-          size={10}
-          lineWidth={1}
-          color="darkorange"
-          variant={BackgroundVariant.Cross}
-        />
+        <TaskRendererBackground />
       </ReactFlow>
     </div>
+  );
+};
+
+const TaskRendererBackground = () => {
+  const { zoom } = useViewport();
+
+  return (
+    <Background
+      gap={50 / Math.max(0.5, Math.min(2, Math.round(zoom / 1.2) * 1.2))}
+      size={1.2 / zoom}
+      offset={1}
+      lineWidth={1}
+      color="darkorange"
+    />
   );
 };

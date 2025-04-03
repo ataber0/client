@@ -4,7 +4,7 @@ import { Node } from "../types/graph.models";
 
 // Constants for layout
 const NODE_SIZE = 200; // Size of each node (diameter)
-const BASE_SPACING = 400; // Base spacing for the layout
+const BASE_SPACING = 300; // Base spacing for the layout
 const OFFSET_X = -8; // Offset for the layout
 const OFFSET_Y = -8; // Offset for the layout
 

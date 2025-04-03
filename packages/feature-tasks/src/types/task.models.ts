@@ -27,3 +27,13 @@ export interface CreateTaskPayload extends HttpRequestBody {
   dependencyId?: string;
   dependentId?: string;
 }
+
+export interface CreateDependencyPayload extends HttpRequestBody {
+  upstreamId: string;
+  downstreamId: string;
+}
+
+export interface RemoveDependencyPayload extends HttpRequestBody {
+  upstreamId: string;
+  downstreamId: string;
+}

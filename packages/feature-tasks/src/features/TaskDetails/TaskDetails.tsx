@@ -1,11 +1,11 @@
 import { useRouter } from "@campus/runtime/router";
 import { Button } from "@campus/ui/Button";
-import { ChevronLeft, Edit, Trash } from "@campus/ui/Icon";
+import { ChevronLeft, Edit, Link2Off, Trash } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
 import { Modal } from "@campus/ui/Modal";
 import { Text } from "@campus/ui/Text";
 import { ReactNode, useState } from "react";
-import { TaskList } from "../../components/TaskList/TaskList";
+import { useRemoveDependency } from "../../data-access/remove-dependency.data-access";
 import { useRemoveTask } from "../../data-access/remove-task.data-access";
 import { useTaskDetails } from "../../data-access/task-details.data-access";
 import { Task } from "../../types/task.models";
@@ -54,28 +54,28 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           </Button>
         </div>
 
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-3 items-center">
           <TaskCheckbox task={data} />
 
           <Text>{data.name}</Text>
         </div>
 
         {data.description && (
-          <Text className="pl-6 text-sm">{data.description}</Text>
+          <Text className="pl-8 text-sm">{data.description}</Text>
         )}
 
         <SubTaskList
           type="dependency"
           task={data}
           tasks={data.dependencies}
-          header="Blocked By"
+          header="Prerequisites"
         />
 
         <SubTaskList
           type="dependent"
           task={data}
           tasks={data.dependents}
-          header="Is Blocking"
+          header="Next Tasks"
         />
       </div>
 
@@ -107,9 +107,11 @@ const SubTaskList = ({
 
   const [showCompleted, setShowCompleted] = useState(false);
 
+  const { mutateAsync: removeDependency } = useRemoveDependency();
+
   return (
-    <div>
-      <div className="flex items-center">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1">
         <Text className="pl-2 text-sm text-gray-400">{header}</Text>
 
         <CreateTaskModalButton
@@ -130,10 +132,31 @@ const SubTaskList = ({
         )}
       </div>
 
-      <TaskList
-        tasks={showCompleted ? tasks : uncompletedTasks}
-        header={({ task }) => <Text className="text-sm">{task.name}</Text>}
-      />
+      {tasks.map((childTask) => (
+        <Link
+          href={`/tasks/${childTask.id}`}
+          className="flex gap-3 items-center"
+        >
+          <TaskCheckbox task={childTask} />
+
+          <Text className="text-xs">{childTask.name}</Text>
+
+          <Button
+            className="ml-auto shrink-0"
+            variant="text"
+            color="danger"
+            onClick={(e) => {
+              e.preventDefault();
+              removeDependency({
+                upstreamId: type === "dependency" ? task.id : childTask.id,
+                downstreamId: type === "dependency" ? childTask.id : task.id,
+              });
+            }}
+          >
+            <Link2Off size={16} />
+          </Button>
+        </Link>
+      ))}
     </div>
   );
 };

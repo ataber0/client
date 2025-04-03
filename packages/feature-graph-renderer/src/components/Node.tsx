@@ -1,3 +1,4 @@
+import { useCreateDependency } from "@campus/feature-tasks/data-access";
 import { Task } from "@campus/feature-tasks/types";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
@@ -12,15 +13,34 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
 
   const { zoom } = useViewport();
 
+  const { mutate: createDependency } = useCreateDependency();
+
   return (
     <>
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={true}
-        style={{ width: 15, height: 15 }}
+        style={{ width: 25, height: 25 }}
+        onConnect={(params) => {
+          createDependency({
+            upstreamId: params.target,
+            downstreamId: params.source,
+          });
+        }}
       />
-      <Handle type="source" position={Position.Bottom} isConnectable={true} />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        isConnectable={true}
+        style={{ width: 25, height: 25 }}
+        onConnect={(params) => {
+          createDependency({
+            upstreamId: params.target,
+            downstreamId: params.source,
+          });
+        }}
+      />
       <div
         className={cn(
           "flex items-center justify-center p-6 rounded-xl border-[14px] border-gray-700",
@@ -35,7 +55,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         <Text
           className={cn(
             "text-xl text-wrap text-center transition-opacity duration-300",
-            zoom < 0.2 && "opacity-0"
+            zoom < 0.3 && "opacity-0"
           )}
         >
           {data.task.name}
