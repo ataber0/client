@@ -4,11 +4,11 @@ import { ChevronLeft, Edit, Link2Off, Trash } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
 import { Modal } from "@campus/ui/Modal";
 import { Text } from "@campus/ui/Text";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { useRemoveDependency } from "../../data-access/remove-dependency.data-access";
 import { useRemoveTask } from "../../data-access/remove-task.data-access";
 import { useTaskDetails } from "../../data-access/task-details.data-access";
-import { Task } from "../../types/task.models";
+import { CreateTaskPayload, TaskBase } from "../../types/task.models";
 import { CreateTaskModalButton } from "../CreateTask/CreateTask";
 import { EditTask } from "../EditTask/EditTask";
 import { TaskCheckbox } from "../TaskCheckbox/TaskCheckbox";
@@ -22,14 +22,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
   const router = useRouter();
 
-  const { mutateAsync: removeTask } = useRemoveTask(taskId);
+  const { mutateAsync: removeTask } = useRemoveTask();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleRemoveTask = async () => {
-    await removeTask();
+    await removeTask({ taskId });
     router.push("/");
   };
+
+  const { mutateAsync: removeDependency } = useRemoveDependency();
 
   return data ? (
     <>
@@ -64,23 +66,58 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           <Text className="pl-8 text-sm">{data.description}</Text>
         )}
 
+        {!data.parent && (
+          <>
+            <hr className="border-gray-600" />
+
+            <RelationshipTaskList
+              tasks={data.subtasks}
+              header="Sub Tasks"
+              initialPayload={{
+                parentId: data.id,
+              }}
+              onRemoveRelationship={(subtask) =>
+                removeTask({ taskId: subtask.id })
+              }
+            />
+          </>
+        )}
+
         <hr className="border-gray-600" />
 
-        <SubTaskList
-          type="dependency"
-          task={data}
+        <RelationshipTaskList
           tasks={data.dependencies}
           header="Prerequisites"
+          initialPayload={{
+            parentId: data.parent?.id,
+            downstreamId: data.id,
+          }}
+          onRemoveRelationship={(dependency) =>
+            removeDependency({
+              upstreamId: data.id,
+              downstreamId: dependency.id,
+            })
+          }
         />
 
         <hr className="border-gray-600" />
 
-        <SubTaskList
-          type="dependent"
-          task={data}
+        <RelationshipTaskList
           tasks={data.dependents}
           header="Next Tasks"
+          initialPayload={{
+            parentId: data.parent?.id,
+            upstreamId: data.id,
+          }}
+          onRemoveRelationship={(dependency) =>
+            removeDependency({
+              upstreamId: dependency.id,
+              downstreamId: data.id,
+            })
+          }
         />
+
+        <hr />
       </div>
 
       <Modal
@@ -94,16 +131,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   ) : null;
 };
 
-const SubTaskList = ({
-  type,
-  task,
+const RelationshipTaskList = ({
   tasks,
   header,
+  initialPayload,
+  onRemoveRelationship,
 }: {
-  type: "dependency" | "dependent";
-  task: Task;
-  tasks: Task[];
-  header: ReactNode;
+  tasks: TaskBase[];
+  header: string;
+  initialPayload: Partial<CreateTaskPayload>;
+  onRemoveRelationship: (dependency: TaskBase) => void;
 }) => {
   const uncompletedTasks = tasks.filter((task) => task.status !== "Done");
 
@@ -113,19 +150,12 @@ const SubTaskList = ({
 
   const displayTasks = showCompleted ? tasks : uncompletedTasks;
 
-  const { mutateAsync: removeDependency } = useRemoveDependency();
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
         <Text className="pl-2 text-sm text-gray-400">{header}</Text>
 
-        <CreateTaskModalButton
-          key={task.id}
-          initialPayload={{
-            [type === "dependency" ? "downstreamId" : "upstreamId"]: task.id,
-          }}
-        />
+        <CreateTaskModalButton key={header} initialPayload={initialPayload} />
 
         {completedCount > 0 && (
           <Button
@@ -153,10 +183,7 @@ const SubTaskList = ({
             color="danger"
             onClick={(e) => {
               e.preventDefault();
-              removeDependency({
-                upstreamId: type === "dependency" ? task.id : childTask.id,
-                downstreamId: type === "dependency" ? childTask.id : task.id,
-              });
+              onRemoveRelationship(childTask);
             }}
           >
             <Link2Off size={16} />

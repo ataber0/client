@@ -30,7 +30,7 @@ function RouteComponent() {
         <Outlet />
       </div>
 
-      <Chat className="fixed top-0 right-0 bg-surface rounded-lg w-[320px] h-full overflow-y-auto" />
+      <Chat className="fixed top-0 right-0 p-2 bg-surface rounded-lg w-[320px] max-h-full overflow-y-auto" />
     </div>
   );
 }
