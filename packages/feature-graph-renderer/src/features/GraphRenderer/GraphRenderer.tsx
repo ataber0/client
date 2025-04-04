@@ -3,20 +3,21 @@ import { useRouter } from "@campus/runtime/router";
 import {
   Background,
   ReactFlow,
+  ReactFlowProvider,
   SelectionMode,
   useViewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, WheelEventHandler } from "react";
 import { TaskEdge } from "../../components/Edge";
 import { TaskNode } from "../../components/Node";
+import { useZoomLevels } from "../../hooks/zoom-levels.hook";
 import { positionNodes } from "../../utils/positioning.utils";
 import {
   convertToReactFlow,
   ReactFlowEdge,
   ReactFlowNode,
 } from "../../utils/transform.utils";
-
 interface GraphRendererProps {
   className?: string;
 }
@@ -30,6 +31,16 @@ const edgeTypes = {
 };
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
+  return (
+    <ReactFlowProvider>
+      <Graph className={className} />
+    </ReactFlowProvider>
+  );
+};
+
+const Graph = ({ className }: GraphRendererProps) => {
+  const { zoomIn, zoomOut, isZooming } = useZoomLevels();
+
   const router = useRouter();
 
   const { data: tasks } = useMyTasks();
@@ -52,12 +63,31 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
     updatePositions();
   }, [tasks]);
 
+  const handleWheel: WheelEventHandler<HTMLDivElement> = (event) => {
+    event.stopPropagation();
+    if (isZooming) return;
+
+    if (Math.abs(event.deltaY) < 10) return;
+
+    if (event.deltaY < 0) {
+      zoomIn();
+    } else {
+      zoomOut();
+    }
+  };
+
   return (
-    <div className={className} style={{ width: "100vw", height: "100vh" }}>
+    <div
+      className={className}
+      onWheel={handleWheel}
+      style={{ width: "100vw", height: "100vh" }}
+    >
       <ReactFlow
         selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
         nodesDraggable={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
         maxZoom={10}
         minZoom={0.2}
         nodes={reactFlow.nodes}
