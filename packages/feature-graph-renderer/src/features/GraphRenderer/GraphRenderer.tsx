@@ -5,7 +5,6 @@ import {
   ReactFlow,
   ReactFlowProvider,
   SelectionMode,
-  useViewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useState } from "react";
@@ -45,7 +44,7 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel } = useGraphRenderer();
+  const { handleMouseWheel, zoomValues } = useGraphRenderer();
 
   const router = useRouter();
 
@@ -81,8 +80,8 @@ const Graph = ({ className }: GraphRendererProps) => {
         nodesDraggable={false}
         zoomOnScroll={false}
         zoomOnPinch={false}
-        maxZoom={125}
-        minZoom={0.2}
+        maxZoom={zoomValues[zoomValues.length - 1]}
+        minZoom={zoomValues[0]}
         nodes={reactFlow.nodes}
         edges={reactFlow.edges}
         nodeTypes={nodeTypes}
@@ -98,11 +97,11 @@ const Graph = ({ className }: GraphRendererProps) => {
 };
 
 const TaskRendererBackground = () => {
-  const { zoom } = useViewport();
+  const { zoom } = useGraphRenderer();
 
   return (
     <Background
-      gap={50 / Math.max(0.5, Math.min(2, Math.round(zoom / 1.2) * 1.2))}
+      gap={50 / zoom}
       size={1.2 / zoom}
       offset={1}
       lineWidth={1}

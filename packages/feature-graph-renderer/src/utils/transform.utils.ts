@@ -1,22 +1,27 @@
 import { Task } from "@campus/feature-tasks/types";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { ElkNode, LayoutOptions } from "elkjs";
+import { baseSpacing, nodeSize } from "./positioning.utils";
 
 export interface NodeData {
   id: string;
   label: string;
-  size: number;
+  height: number;
+  width: number;
   task: Task;
   children: NodeData[];
   parentId?: string;
-  layoutOptions: LayoutOptions;
+  level: number;
+  layoutOptions?: LayoutOptions;
 }
 
 export interface ElkNodeData extends ElkNode {
   x: number;
   y: number;
-  size: number;
+  height: number;
+  width: number;
   task: Task;
+  level: number;
   parentId?: string;
   children: ElkNodeData[];
 }
@@ -37,8 +42,6 @@ export interface ReactFlowEdge {
   data: { color: string; level: number };
 }
 
-const NODE_SIZE = 200;
-
 export function buildHierarchy(tasks: Task[]): NodeData[] {
   const nodeMap = new Map<string, NodeData>();
 
@@ -47,12 +50,11 @@ export function buildHierarchy(tasks: Task[]): NodeData[] {
       id: task.id,
       label: task.name,
       parentId: task.parent?.id,
-      size: task.parent ? NODE_SIZE * 0.5 : NODE_SIZE,
+      width: nodeSize,
+      height: nodeSize,
       task,
       children: [],
-      layoutOptions: {
-        "elk.layered.spacing.baseValue": "50",
-      },
+      level: 0,
     };
     nodeMap.set(node.id, node);
   });
@@ -75,6 +77,24 @@ export function buildHierarchy(tasks: Task[]): NodeData[] {
       rootNodes.push(node);
     }
   });
+
+  function setLevels(nodes: NodeData[], level: number) {
+    nodes.forEach((node) => {
+      node.level = level;
+      node.height = nodeSize / Math.pow(5, level + 1);
+      node.width = nodeSize / Math.pow(5, level + 1);
+      node.layoutOptions = {
+        "elk.layered.spacing.baseValue": (
+          baseSpacing / Math.pow(5, level + 1)
+        ).toString(),
+      };
+      if (node.children.length > 0) {
+        setLevels(node.children, level + 1);
+      }
+    });
+  }
+
+  setLevels(rootNodes, 0);
 
   return rootNodes;
 }
@@ -100,13 +120,13 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
   // Collect all nodes into the map
   collectNodes(hierarchy);
 
-  function traverse(node: ElkNodeData, level: number, parentId?: string) {
+  function traverse(node: ElkNodeData, parentId?: string) {
     nodes.push({
       id: node.id,
       type: "task",
       position: { x: node.x, y: node.y },
       parentId,
-      data: { task: node.task, level },
+      data: { task: node.task, level: node.level },
     });
 
     // Add dependency edges
@@ -121,7 +141,7 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
             target: node.id,
             data: {
               color: getStatusColor(nodeMap.get(dependency.id)!.task),
-              level,
+              level: node.level,
             },
           });
         }
@@ -129,12 +149,12 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
     }
 
     node.children.forEach((child) => {
-      traverse(child, level + 1, node.id);
+      traverse(child, node.id);
     });
   }
 
   hierarchy.forEach((node) => {
-    traverse(node, 0);
+    traverse(node);
   });
 
   return { nodes, edges };

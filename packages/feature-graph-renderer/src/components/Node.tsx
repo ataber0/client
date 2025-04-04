@@ -6,6 +6,7 @@ import { cn } from "@campus/ui/cn";
 import { Text } from "@campus/ui/Text";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { useGraphRenderer } from "../hooks/graph-renderer.hook";
+import { nodeSize } from "../utils/positioning.utils";
 
 type TaskNode = Node<{ task: Task; level: number }, "task">;
 
@@ -20,9 +21,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
 
   const scale = 1 / (Math.pow(5, data.level) || 1);
 
-  console.log(data.level, scale);
-
-  const handleSize = 25 * scale;
+  const handleSize = nodeSize * 0.1 * scale;
 
   return (
     <div
@@ -43,7 +42,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
           height: handleSize,
           minWidth: handleSize,
           minHeight: handleSize,
-          outlineWidth: "1px",
+          borderWidth: 50 * scale,
         }}
         onConnect={(params) => {
           createDependency({
@@ -61,7 +60,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
           height: handleSize,
           minWidth: handleSize,
           minHeight: handleSize,
-          outlineWidth: "1px",
+          borderWidth: 50 * scale,
         }}
         onConnect={(params) => {
           createDependency({
@@ -77,11 +76,11 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         )}
         style={{
           backgroundColor: getStatusColor(data.task),
-          width: 200 * scale,
-          height: 200 * scale,
-          padding: 20 * scale,
-          borderWidth: 14 * scale,
-          borderRadius: 14 * scale,
+          width: nodeSize * scale,
+          height: nodeSize * scale,
+          padding: nodeSize * 0.1 * scale,
+          borderWidth: nodeSize * 0.07 * scale,
+          borderRadius: nodeSize * 0.07 * scale,
         }}
       >
         <Text
@@ -90,8 +89,12 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
             relativeSubTaskLevel < 1 && "opacity-0"
           )}
           style={{
-            fontSize: `${scale}rem`,
-            lineHeight: `${scale * 1.2}rem`,
+            transform: `scale(${nodeSize * 0.005 * scale})`,
+            width: `calc(100% / ${nodeSize * 0.004 * scale})`,
+            fontSize: "1rem",
+            lineHeight: "1.2rem",
+            // fontSize: `${nodeSize * 0.005 * scale}rem`,
+            // lineHeight: `${nodeSize * 0.006 * scale}rem`,
           }}
         >
           {data.task.name}
