@@ -25,7 +25,7 @@ export interface ReactFlowNode {
   id: string;
   type: "task";
   position: { x: number; y: number };
-  data: { task: Task };
+  data: { task: Task; level: number };
   parentId?: string;
 }
 
@@ -34,7 +34,7 @@ export interface ReactFlowEdge {
   type: "taskEdge";
   source: string;
   target: string;
-  data: { color: string };
+  data: { color: string; level: number };
 }
 
 const NODE_SIZE = 200;
@@ -106,7 +106,7 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
       type: "task",
       position: { x: node.x, y: node.y },
       parentId,
-      data: { task: node.task },
+      data: { task: node.task, level },
     });
 
     // Add dependency edges
@@ -119,7 +119,10 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
             type: "taskEdge",
             source: dependency.id,
             target: node.id,
-            data: { color: getStatusColor(nodeMap.get(dependency.id)!.task) },
+            data: {
+              color: getStatusColor(nodeMap.get(dependency.id)!.task),
+              level,
+            },
           });
         }
       });

@@ -4,20 +4,23 @@ import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
 import { cn } from "@campus/ui/cn";
 import { Text } from "@campus/ui/Text";
-import { Handle, Node, NodeProps, Position, useViewport } from "@xyflow/react";
+import { Handle, Node, NodeProps, Position } from "@xyflow/react";
+import { useGraphRenderer } from "../hooks/graph-renderer.hook";
 
 type TaskNode = Node<{ task: Task; level: number }, "task">;
 
 export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
   const { params } = useRouter();
 
-  const { zoom } = useViewport();
+  const { zoomLevel } = useGraphRenderer();
 
   const { mutate: createDependency } = useCreateDependency();
 
-  const subTaskLevel = data.task.parent ? 1 : 0;
+  const relativeSubTaskLevel = zoomLevel - data.level;
 
-  const scale = 1 / (subTaskLevel * 5 || 1);
+  const scale = 1 / (Math.pow(5, data.level) || 1);
+
+  console.log(data.level, scale);
 
   const handleSize = 25 * scale;
 
@@ -25,18 +28,23 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
     <div
       className={cn(
         "transition-opacity duration-300",
-        zoom > 2 &&
-          !data.task.parent &&
-          data.task.subtasks.length > 0 &&
-          "opacity-20",
-        zoom <= 2 && data.task.parent && "opacity-0"
+        relativeSubTaskLevel > 1 && "opacity-20",
+        ((relativeSubTaskLevel < 1 && data.task.parent) ||
+          relativeSubTaskLevel > 2) &&
+          "opacity-0"
       )}
     >
       <Handle
         type="target"
         position={Position.Top}
         isConnectable={true}
-        style={{ width: handleSize, height: handleSize }}
+        style={{
+          width: handleSize,
+          height: handleSize,
+          minWidth: handleSize,
+          minHeight: handleSize,
+          outlineWidth: "1px",
+        }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,
@@ -48,7 +56,13 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         type="source"
         position={Position.Bottom}
         isConnectable={true}
-        style={{ width: handleSize, height: handleSize }}
+        style={{
+          width: handleSize,
+          height: handleSize,
+          minWidth: handleSize,
+          minHeight: handleSize,
+          outlineWidth: "1px",
+        }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,
@@ -73,7 +87,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         <Text
           className={cn(
             `text-xl text-wrap text-center transition-opacity duration-300`,
-            zoom < 0.3 && "opacity-0"
+            relativeSubTaskLevel < 1 && "opacity-0"
           )}
           style={{
             fontSize: `${scale}rem`,

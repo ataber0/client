@@ -1,6 +1,7 @@
-import { useReactFlow } from "@xyflow/react";
+import { useReactFlow, useViewport } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-const zoomValues = [0.2, 1, 5];
+
+const zoomValues = [0.2, 1, 5, 25, 125];
 
 export const useZoomLevels = () => {
   const [isZooming, setIsZooming] = useState(false);
@@ -9,29 +10,29 @@ export const useZoomLevels = () => {
 
   const { getViewport, setViewport, zoomTo } = useReactFlow();
 
+  const { zoom } = useViewport();
+
   const [zoomLevel, setZoomLevel] = useState(0);
 
-  const zoom = useMemo(() => {
-    return zoomValues[zoomLevel];
-  }, [zoomLevel]);
+  const targetZoom = useMemo(() => zoomValues[zoomLevel], [zoomLevel]);
 
   const zoomToMousePosition = useCallback(() => {
     const { x: currentX, y: currentY, zoom: currentZoom } = getViewport();
 
     // zooming out doesn't need to center on the mouse position
-    if (zoom < currentZoom) {
-      zoomTo(zoom, { duration: 600 });
+    if (targetZoom < currentZoom) {
+      zoomTo(targetZoom, { duration: 600 });
       return;
     }
 
     const flowX = (lastMousePos.current.x - currentX) / currentZoom;
     const flowY = (lastMousePos.current.y - currentY) / currentZoom;
 
-    const newX = lastMousePos.current.x - flowX * zoom;
-    const newY = lastMousePos.current.y - flowY * zoom;
+    const newX = lastMousePos.current.x - flowX * targetZoom;
+    const newY = lastMousePos.current.y - flowY * targetZoom;
 
-    setViewport({ x: newX, y: newY, zoom }, { duration: 600 });
-  }, [zoom]);
+    setViewport({ x: newX, y: newY, zoom: targetZoom }, { duration: 600 });
+  }, [targetZoom]);
 
   useEffect(() => {
     zoomToMousePosition();
@@ -39,7 +40,7 @@ export const useZoomLevels = () => {
     setTimeout(() => {
       setIsZooming(false);
     }, 800);
-  }, [zoom]);
+  }, [targetZoom]);
 
   const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation();
@@ -74,6 +75,7 @@ export const useZoomLevels = () => {
 
   return {
     zoom,
+    targetZoom,
     zoomValues,
     zoomLevel,
     isZooming,

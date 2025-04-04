@@ -66,22 +66,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           <Text className="pl-8 text-sm">{data.description}</Text>
         )}
 
-        {!data.parent && (
-          <>
-            <hr className="border-gray-600" />
+        <hr className="border-gray-600" />
 
-            <RelationshipTaskList
-              tasks={data.subtasks}
-              header="Sub Tasks"
-              initialPayload={{
-                parentId: data.id,
-              }}
-              onRemoveRelationship={(subtask) =>
-                removeTask({ taskId: subtask.id })
-              }
-            />
-          </>
-        )}
+        <RelationshipTaskList
+          tasks={data.subtasks}
+          header="Sub Tasks"
+          initialPayload={{
+            parentId: data.id,
+          }}
+          onRemoveRelationship={(subtask) => removeTask({ taskId: subtask.id })}
+        />
 
         <hr className="border-gray-600" />
 

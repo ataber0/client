@@ -1,12 +1,6 @@
-import {
-  BaseEdge,
-  Edge,
-  EdgeProps,
-  getSmoothStepPath,
-  useViewport,
-} from "@xyflow/react";
-
-type TaskEdge = Edge<{ color: string }, "taskEdge">;
+import { BaseEdge, Edge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import { useGraphRenderer } from "../hooks/graph-renderer.hook";
+type TaskEdge = Edge<{ color: string; level: number }, "taskEdge">;
 
 export const TaskEdge = ({
   sourceX,
@@ -17,7 +11,7 @@ export const TaskEdge = ({
   targetPosition,
   data,
 }: EdgeProps<TaskEdge>) => {
-  const { zoom } = useViewport();
+  const { zoom, zoomLevel } = useGraphRenderer();
 
   const [edgePath] = getSmoothStepPath({
     sourceX,
@@ -29,16 +23,14 @@ export const TaskEdge = ({
     borderRadius: 40,
   });
 
-  return (
-    <>
-      <BaseEdge
-        path={edgePath}
-        style={{
-          opacity: 0.5,
-          stroke: data?.color,
-          strokeWidth: 10 / zoom,
-        }}
-      />
-    </>
-  );
+  return zoomLevel - 1 === data?.level ? (
+    <BaseEdge
+      path={edgePath}
+      style={{
+        opacity: 0.5,
+        stroke: data?.color,
+        strokeWidth: 10 / zoom,
+      }}
+    />
+  ) : null;
 };

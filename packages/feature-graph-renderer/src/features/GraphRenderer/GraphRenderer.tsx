@@ -11,13 +11,17 @@ import "@xyflow/react/dist/style.css";
 import { useEffect, useState } from "react";
 import { TaskEdge } from "../../components/Edge";
 import { TaskNode } from "../../components/Node";
-import { useZoomLevels } from "../../hooks/zoom-levels.hook";
+import {
+  GraphRendererProvider,
+  useGraphRenderer,
+} from "../../hooks/graph-renderer.hook";
 import { positionNodes } from "../../utils/positioning.utils";
 import {
   convertToReactFlow,
   ReactFlowEdge,
   ReactFlowNode,
 } from "../../utils/transform.utils";
+
 interface GraphRendererProps {
   className?: string;
 }
@@ -33,13 +37,15 @@ const edgeTypes = {
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
   return (
     <ReactFlowProvider>
-      <Graph className={className} />
+      <GraphRendererProvider>
+        <Graph className={className} />
+      </GraphRendererProvider>
     </ReactFlowProvider>
   );
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel } = useZoomLevels();
+  const { handleMouseWheel } = useGraphRenderer();
 
   const router = useRouter();
 
@@ -75,7 +81,7 @@ const Graph = ({ className }: GraphRendererProps) => {
         nodesDraggable={false}
         zoomOnScroll={false}
         zoomOnPinch={false}
-        maxZoom={10}
+        maxZoom={125}
         minZoom={0.2}
         nodes={reactFlow.nodes}
         edges={reactFlow.edges}
