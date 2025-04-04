@@ -134,7 +134,5 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
     traverse(node, 0);
   });
 
-  console.log(nodes);
-
   return { nodes, edges };
 }
