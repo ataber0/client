@@ -86,6 +86,7 @@ const Graph = ({ className }: GraphRendererProps) => {
         edges={reactFlow.edges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        zoomOnDoubleClick={false}
         onNodeClick={(e, node) => {
           router.push(`/tasks/${node.data.task.id}`);
         }}

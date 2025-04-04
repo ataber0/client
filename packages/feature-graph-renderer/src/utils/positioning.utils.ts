@@ -36,7 +36,5 @@ export async function positionNodes(tasks: Task[]): Promise<ElkNodeData[]> {
 
   const elkLayout = await elk.layout(elkGraph);
 
-  console.log(elkLayout);
-
   return elkLayout.children as unknown as ElkNodeData[];
 }

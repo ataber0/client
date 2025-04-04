@@ -52,8 +52,6 @@ export const useZoomLevels = () => {
   }, [targetZoom]);
 
   const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
-    e.stopPropagation();
-
     if (isZooming) return;
 
     lastMousePos.current = {

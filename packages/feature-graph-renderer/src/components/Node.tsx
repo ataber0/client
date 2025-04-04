@@ -93,8 +93,6 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
             width: `calc(100% / ${nodeSize * 0.004 * scale})`,
             fontSize: "1rem",
             lineHeight: "1.2rem",
-            // fontSize: `${nodeSize * 0.005 * scale}rem`,
-            // lineHeight: `${nodeSize * 0.006 * scale}rem`,
           }}
         >
           {data.task.name}
