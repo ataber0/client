@@ -8,7 +8,7 @@ import {
   useViewport,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect, useState, WheelEventHandler } from "react";
+import { useEffect, useState } from "react";
 import { TaskEdge } from "../../components/Edge";
 import { TaskNode } from "../../components/Node";
 import { useZoomLevels } from "../../hooks/zoom-levels.hook";
@@ -39,7 +39,7 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { zoomIn, zoomOut, isZooming } = useZoomLevels();
+  const { handleMouseWheel } = useZoomLevels();
 
   const router = useRouter();
 
@@ -63,23 +63,10 @@ const Graph = ({ className }: GraphRendererProps) => {
     updatePositions();
   }, [tasks]);
 
-  const handleWheel: WheelEventHandler<HTMLDivElement> = (event) => {
-    event.stopPropagation();
-    if (isZooming) return;
-
-    if (Math.abs(event.deltaY) < 10) return;
-
-    if (event.deltaY < 0) {
-      zoomIn();
-    } else {
-      zoomOut();
-    }
-  };
-
   return (
     <div
       className={className}
-      onWheel={handleWheel}
+      onWheel={handleMouseWheel}
       style={{ width: "100vw", height: "100vh" }}
     >
       <ReactFlow
