@@ -81,11 +81,12 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
           padding: nodeSize * 0.1 * scale,
           borderWidth: nodeSize * 0.07 * scale,
           borderRadius: nodeSize * 0.07 * scale,
+          gap: nodeSize * 0.12 * scale,
         }}
       >
         <Text
           className={cn(
-            `text-xl text-wrap text-center transition-opacity duration-300`,
+            `text-wrap text-center transition-opacity duration-300`,
             relativeSubTaskLevel < 1 && "opacity-0"
           )}
           style={{
@@ -97,6 +98,23 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         >
           {data.task.name}
         </Text>
+
+        {data.task.subtasks.length > 0 && (
+          <Text
+            className={cn(
+              `text-[0.6rem] text-wrap text-center transition-opacity duration-300`,
+              relativeSubTaskLevel < 1 && "opacity-0"
+            )}
+            style={{
+              transform: `scale(${nodeSize * 0.005 * scale})`,
+              width: `calc(100% / ${nodeSize * 0.004 * scale})`,
+            }}
+          >
+            {data.task.subtasks.filter((task) => task.status === "Done").length}
+            {"/"}
+            {data.task.subtasks.length} Sub Tasks Complete
+          </Text>
+        )}
       </div>
     </div>
   ) : null;

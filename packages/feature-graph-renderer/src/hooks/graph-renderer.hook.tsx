@@ -74,6 +74,11 @@ export const GraphRendererProvider = ({
         node = reactFlow.nodes.find((n) => n.id === node?.parentId);
       }
       zoomLevels.setViewport({ x, y, zoomLevel: originalNode.data.level + 1 });
+    } else {
+      zoomLevels.setViewport((existing) => ({
+        ...existing,
+        zoomLevel: 0,
+      }));
     }
   }, [params.taskId]);
 

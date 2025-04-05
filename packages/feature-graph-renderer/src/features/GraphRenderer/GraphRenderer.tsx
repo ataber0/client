@@ -63,6 +63,7 @@ const Graph = ({ className }: GraphRendererProps) => {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
+        onPaneClick={() => push("/")}
         onNodeClick={(e, node) => {
           if (params.taskId === node.data.task.id) {
             if (node.data.task.subtasks?.length > 0) {
