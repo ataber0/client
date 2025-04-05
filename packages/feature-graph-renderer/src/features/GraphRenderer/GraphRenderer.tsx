@@ -13,6 +13,7 @@ import {
   GraphRendererProvider,
   useGraphRenderer,
 } from "../../hooks/graph-renderer.hook";
+import { nodeSize } from "../../utils/positioning.utils";
 
 interface GraphRendererProps {
   className?: string;
@@ -39,7 +40,8 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues, reactFlow, ref } = useGraphRenderer();
+  const { handleMouseWheel, zoomValues, reactFlow, ref, zoomLevel } =
+    useGraphRenderer();
 
   const { push } = useRouter();
 
@@ -63,6 +65,9 @@ const Graph = ({ className }: GraphRendererProps) => {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
+        connectionLineStyle={{
+          strokeWidth: nodeSize / 5 / Math.pow(5, zoomLevel),
+        }}
         onPaneClick={() => push("/")}
       >
         <TaskRendererBackground />

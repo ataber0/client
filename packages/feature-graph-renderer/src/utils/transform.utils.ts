@@ -91,6 +91,14 @@ export function buildHierarchy(tasks: Task[]): NodeData[] {
       node.height = nodeSize / Math.pow(5, level + 1);
       node.width = nodeSize / Math.pow(5, level + 1);
       node.layoutOptions = {
+        "elk.algorithm": "layered",
+        "elk.direction": "UP",
+        "elk.hierarchyHandling": "SEPARATE_CHILDREN",
+        "elk.layered.edgeRouting": "ORTHOGONAL",
+        "elk.layered.cycleBreaking.strategy": "INTERACTIVE",
+        "elk.layered.nodeLayering.strategy": "INTERACTIVE",
+        "elk.layered.crossingMinimization.strategy": "INTERACTIVE",
+        "elk.layered.mergeEdges": "true",
         "elk.layered.spacing.baseValue": (
           baseSpacing / Math.pow(5, level + 1)
         ).toString(),
