@@ -1,5 +1,5 @@
 import { useReactFlow, useViewport } from "@xyflow/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { nodeSize } from "../utils/positioning.utils";
 
 const baseZoomLevel = nodeSize / 150000000;
@@ -15,88 +15,66 @@ const zoomValues = [
 export const useZoomLevels = () => {
   const [isZooming, setIsZooming] = useState(false);
 
-  const lastMousePos = useRef({ x: 0, y: 0 });
+  const [viewport, setViewport] = useState<{
+    x: number;
+    y: number;
+    zoomLevel: number;
+  }>({
+    x: 0,
+    y: 0,
+    zoomLevel: 0,
+  });
 
-  const { getViewport, setCenter, setViewport, zoomTo } = useReactFlow();
+  const { setCenter, screenToFlowPosition } = useReactFlow();
 
   const { zoom } = useViewport();
 
-  const [zoomLevel, setZoomLevel] = useState(0);
-
-  const targetZoom = useMemo(() => zoomValues[zoomLevel], [zoomLevel]);
-
-  const zoomToPosition = useCallback(
-    (x: number, y: number) => {
-      console.log("zoomToPosition", x, y, targetZoom);
-      setCenter(x, y, { duration: 600, zoom: targetZoom });
-    },
-    [targetZoom]
+  const targetZoom = useMemo(
+    () => zoomValues[viewport.zoomLevel],
+    [viewport.zoomLevel]
   );
 
-  const zoomToMousePosition = useCallback(() => {
-    const { x: currentX, y: currentY, zoom: currentZoom } = getViewport();
-
-    // zooming out doesn't need to center on the mouse position
-    if (targetZoom < currentZoom) {
-      zoomTo(targetZoom, { duration: 600 });
-      return;
-    }
-
-    const flowX = (lastMousePos.current.x - currentX) / currentZoom;
-    const flowY = (lastMousePos.current.y - currentY) / currentZoom;
-
-    const newX = lastMousePos.current.x - flowX * targetZoom;
-    const newY = lastMousePos.current.y - flowY * targetZoom;
-
-    setViewport({ x: newX, y: newY, zoom: targetZoom }, { duration: 600 });
-  }, [targetZoom]);
+  const zoomToPosition = useCallback(() => {
+    setCenter(viewport.x, viewport.y, {
+      duration: 600,
+      zoom: targetZoom,
+    });
+  }, [viewport.x, viewport.y, targetZoom]);
 
   useEffect(() => {
-    zoomToMousePosition();
-
-    setTimeout(() => {
-      setIsZooming(false);
-    }, 800);
-  }, [targetZoom]);
+    zoomToPosition();
+  }, [viewport.x, viewport.y, targetZoom]);
 
   const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
     if (isZooming) return;
 
-    lastMousePos.current = {
+    if (Math.abs(e.deltaY) < 10) return;
+
+    const mousePosition = {
       x: e.clientX,
       y: e.clientY,
     };
 
-    if (Math.abs(e.deltaY) < 10) return;
+    const zoomLevel =
+      e.deltaY < 0
+        ? Math.min(viewport.zoomLevel + 1, zoomValues.length - 1)
+        : Math.max(viewport.zoomLevel - 1, 0);
 
-    if (e.deltaY < 0) {
-      zoomIn();
-    } else {
-      zoomOut();
-    }
+    setIsZooming(true);
+    setViewport({ ...screenToFlowPosition(mousePosition), zoomLevel });
+    setTimeout(() => {
+      setIsZooming(false);
+    }, 800);
   };
-
-  const zoomIn = useCallback(() => {
-    if (isZooming || zoomLevel === zoomValues.length - 1) return;
-    setIsZooming(true);
-    setZoomLevel(zoomLevel + 1);
-  }, [zoomLevel, isZooming]);
-
-  const zoomOut = useCallback(() => {
-    if (isZooming || zoomLevel === 0) return;
-    setIsZooming(true);
-    setZoomLevel(zoomLevel - 1);
-  }, [zoomLevel, isZooming]);
 
   return {
     zoom,
     targetZoom,
     zoomValues,
-    zoomLevel,
     isZooming,
-    zoomIn,
-    zoomOut,
+    zoomLevel: viewport.zoomLevel,
     handleMouseWheel,
     zoomToPosition,
+    setViewport,
   };
 };

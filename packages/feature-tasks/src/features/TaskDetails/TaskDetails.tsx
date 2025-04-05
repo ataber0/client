@@ -37,10 +37,15 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
     <>
       <div className="flex flex-col gap-6 p-2">
         <div className="flex flex-row items-center gap-2">
-          <Link href="/" className="flex flex-row items-center gap-2">
-            <ChevronLeft size={16} />
+          <Link
+            href={data.parent ? `/tasks/${data.parent.id}` : "/"}
+            className="flex flex-row items-center gap-2"
+          >
+            <ChevronLeft size={16} className="shrink-0" />
 
-            <Text className="text-sm">Active Tasks</Text>
+            <Text className="text-sm">
+              {data.parent ? data.parent.name : "Active Tasks"}
+            </Text>
           </Link>
 
           <Button
@@ -48,7 +53,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             variant="text"
             onClick={() => setIsModalOpen(true)}
           >
-            <Edit size={16} />
+            <Edit size={16} className="shrink-0" />
           </Button>
 
           <Button variant="text" color="danger" onClick={handleRemoveTask}>

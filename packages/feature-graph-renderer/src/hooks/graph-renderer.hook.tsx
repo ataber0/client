@@ -4,8 +4,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { nodeSize, positionNodes } from "../utils/positioning.utils";
 import {
   convertToReactFlow,
-  ElkNodeData,
   ReactFlowGraph,
+  ReactFlowNode,
 } from "../utils/transform.utils";
 import { useZoomLevels } from "./zoom-levels.hook";
 
@@ -41,8 +41,6 @@ export const GraphRendererProvider = ({
 
   const { params } = useRouter();
 
-  const [positionedNodes, setPositionedNodes] = useState<ElkNodeData[]>([]);
-
   const [reactFlow, setReactFlow] = useState<ReactFlowGraph>({
     nodes: [],
     edges: [],
@@ -51,7 +49,6 @@ export const GraphRendererProvider = ({
   useEffect(() => {
     const updatePositions = async () => {
       const positionedNodes = await positionNodes(tasks);
-      setPositionedNodes(positionedNodes);
       const reactFlow = convertToReactFlow(positionedNodes);
       setReactFlow(reactFlow);
     };
@@ -64,10 +61,11 @@ export const GraphRendererProvider = ({
   }, [tasks, params.taskId]);
 
   useEffect(() => {
-    let node = reactFlow.nodes.find(
+    const originalNode = reactFlow.nodes.find(
       (node) => node.data.task.id === params.taskId
     );
-    if (node) {
+    if (originalNode) {
+      let node: ReactFlowNode | undefined = originalNode;
       let x = nodeSize / (Math.pow(5, node.data.level || 0) || 1) / 2;
       let y = nodeSize / (Math.pow(5, node.data.level || 0) || 1) / 2;
       while (node) {
@@ -75,7 +73,7 @@ export const GraphRendererProvider = ({
         y += node.position.y;
         node = reactFlow.nodes.find((n) => n.id === node?.parentId);
       }
-      zoomLevels.zoomToPosition(x, y);
+      zoomLevels.setViewport({ x, y, zoomLevel: originalNode.data.level + 1 });
     }
   }, [params.taskId]);
 
