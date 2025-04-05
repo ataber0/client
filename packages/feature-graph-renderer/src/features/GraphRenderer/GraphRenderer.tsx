@@ -1,5 +1,4 @@
 import { useMyTasks } from "@campus/feature-tasks/data-access";
-import { useRouter } from "@campus/runtime/router";
 import {
   Background,
   ReactFlow,
@@ -43,8 +42,6 @@ const Graph = ({ className }: GraphRendererProps) => {
   const { handleMouseWheel, zoomValues, reactFlow, ref, zoomLevel } =
     useGraphRenderer();
 
-  const { push } = useRouter();
-
   return (
     <div
       className={className}
@@ -68,7 +65,6 @@ const Graph = ({ className }: GraphRendererProps) => {
         connectionLineStyle={{
           strokeWidth: nodeSize / 5 / Math.pow(5, zoomLevel),
         }}
-        onPaneClick={() => push("/")}
       >
         <TaskRendererBackground />
       </ReactFlow>
