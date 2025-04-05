@@ -39,9 +39,10 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues, reactFlow } = useGraphRenderer();
+  const { handleMouseWheel, zoomValues, reactFlow, setViewport } =
+    useGraphRenderer();
 
-  const router = useRouter();
+  const { push, params } = useRouter();
 
   return (
     <div
@@ -63,7 +64,13 @@ const Graph = ({ className }: GraphRendererProps) => {
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
         onNodeClick={(e, node) => {
-          router.push(`/tasks/${node.data.task.id}`);
+          if (params.taskId === node.data.task.id) {
+            if (node.data.task.subtasks?.length > 0) {
+              push(`/tasks/${node.data.task.subtasks[0].id}`);
+            }
+          } else {
+            push(`/tasks/${node.data.task.id}`);
+          }
         }}
       >
         <TaskRendererBackground />

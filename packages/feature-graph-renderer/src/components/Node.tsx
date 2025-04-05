@@ -23,14 +23,14 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
 
   const handleSize = nodeSize * 0.1 * scale;
 
-  return (
+  const shouldHide =
+    (relativeSubTaskLevel < 1 && data.task.parent) || relativeSubTaskLevel > 2;
+
+  return !shouldHide ? (
     <div
       className={cn(
         "transition-opacity duration-300",
-        relativeSubTaskLevel > 1 && "opacity-20",
-        ((relativeSubTaskLevel < 1 && data.task.parent) ||
-          relativeSubTaskLevel > 2) &&
-          "opacity-0"
+        relativeSubTaskLevel > 1 && "opacity-20"
       )}
     >
       <Handle
@@ -99,5 +99,5 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         </Text>
       </div>
     </div>
-  );
+  ) : null;
 };

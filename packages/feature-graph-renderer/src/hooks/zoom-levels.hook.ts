@@ -2,7 +2,14 @@ import { useReactFlow, useViewport } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { nodeSize } from "../utils/positioning.utils";
 
+export interface Viewport {
+  x: number;
+  y: number;
+  zoomLevel: number;
+}
+
 const baseZoomLevel = nodeSize / 150000000;
+
 const zoomValues = [
   baseZoomLevel,
   baseZoomLevel * 5,
@@ -15,11 +22,7 @@ const zoomValues = [
 export const useZoomLevels = () => {
   const [isZooming, setIsZooming] = useState(false);
 
-  const [viewport, setViewport] = useState<{
-    x: number;
-    y: number;
-    zoomLevel: number;
-  }>({
+  const [viewport, setViewport] = useState<Viewport>({
     x: 0,
     y: 0,
     zoomLevel: 0,
