@@ -7,19 +7,12 @@ import {
   SelectionMode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect, useState } from "react";
 import { TaskEdge } from "../../components/Edge";
 import { TaskNode } from "../../components/Node";
 import {
   GraphRendererProvider,
   useGraphRenderer,
 } from "../../hooks/graph-renderer.hook";
-import { positionNodes } from "../../utils/positioning.utils";
-import {
-  convertToReactFlow,
-  ReactFlowEdge,
-  ReactFlowNode,
-} from "../../utils/transform.utils";
 
 interface GraphRendererProps {
   className?: string;
@@ -34,39 +27,21 @@ const edgeTypes = {
 };
 
 export const GraphRenderer = ({ className }: GraphRendererProps) => {
-  return (
+  const { data: tasks } = useMyTasks();
+
+  return tasks ? (
     <ReactFlowProvider>
-      <GraphRendererProvider>
+      <GraphRendererProvider tasks={tasks}>
         <Graph className={className} />
       </GraphRendererProvider>
     </ReactFlowProvider>
-  );
+  ) : null;
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues } = useGraphRenderer();
+  const { handleMouseWheel, zoomValues, reactFlow } = useGraphRenderer();
 
   const router = useRouter();
-
-  const { data: tasks } = useMyTasks();
-
-  const [reactFlow, setReactFlow] = useState<{
-    nodes: ReactFlowNode[];
-    edges: ReactFlowEdge[];
-  }>({ nodes: [], edges: [] });
-
-  // Update node positions when tasks change
-  useEffect(() => {
-    if (!tasks) return;
-
-    const updatePositions = async () => {
-      const positionedNodes = await positionNodes(tasks);
-      const reactFlow = convertToReactFlow(positionedNodes);
-      setReactFlow(reactFlow);
-    };
-
-    updatePositions();
-  }, [tasks]);
 
   return (
     <div

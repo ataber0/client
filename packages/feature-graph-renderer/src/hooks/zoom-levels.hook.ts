@@ -17,13 +17,21 @@ export const useZoomLevels = () => {
 
   const lastMousePos = useRef({ x: 0, y: 0 });
 
-  const { getViewport, setViewport, zoomTo } = useReactFlow();
+  const { getViewport, setCenter, setViewport, zoomTo } = useReactFlow();
 
   const { zoom } = useViewport();
 
   const [zoomLevel, setZoomLevel] = useState(0);
 
   const targetZoom = useMemo(() => zoomValues[zoomLevel], [zoomLevel]);
+
+  const zoomToPosition = useCallback(
+    (x: number, y: number) => {
+      console.log("zoomToPosition", x, y, targetZoom);
+      setCenter(x, y, { duration: 600, zoom: targetZoom });
+    },
+    [targetZoom]
+  );
 
   const zoomToMousePosition = useCallback(() => {
     const { x: currentX, y: currentY, zoom: currentZoom } = getViewport();
@@ -89,5 +97,6 @@ export const useZoomLevels = () => {
     zoomIn,
     zoomOut,
     handleMouseWheel,
+    zoomToPosition,
   };
 };

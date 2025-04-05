@@ -26,11 +26,16 @@ export interface ElkNodeData extends ElkNode {
   children: ElkNodeData[];
 }
 
+export interface ReactFlowGraph {
+  nodes: ReactFlowNode[];
+  edges: ReactFlowEdge[];
+}
+
 export interface ReactFlowNode {
   id: string;
   type: "task";
   position: { x: number; y: number };
-  data: { task: Task; level: number };
+  data: { task: Task; level: number; size: number };
   parentId?: string;
 }
 
@@ -99,10 +104,7 @@ export function buildHierarchy(tasks: Task[]): NodeData[] {
   return rootNodes;
 }
 
-export function convertToReactFlow(hierarchy: ElkNodeData[]): {
-  nodes: ReactFlowNode[];
-  edges: ReactFlowEdge[];
-} {
+export function convertToReactFlow(hierarchy: ElkNodeData[]): ReactFlowGraph {
   const nodes: ReactFlowNode[] = [];
   const edges: ReactFlowEdge[] = [];
   const nodeMap = new Map<string, ElkNodeData>();
@@ -126,7 +128,7 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): {
       type: "task",
       position: { x: node.x, y: node.y },
       parentId,
-      data: { task: node.task, level: node.level },
+      data: { task: node.task, level: node.level, size: node.width },
     });
 
     // Add dependency edges
