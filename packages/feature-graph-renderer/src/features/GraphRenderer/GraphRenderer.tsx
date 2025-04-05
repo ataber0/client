@@ -39,10 +39,9 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues, reactFlow, setViewport } =
-    useGraphRenderer();
+  const { handleMouseWheel, zoomValues, reactFlow, ref } = useGraphRenderer();
 
-  const { push, params } = useRouter();
+  const { push } = useRouter();
 
   return (
     <div
@@ -51,6 +50,7 @@ const Graph = ({ className }: GraphRendererProps) => {
       style={{ width: "100vw", height: "100vh" }}
     >
       <ReactFlow
+        ref={ref}
         selectionOnDrag={true}
         selectionMode={SelectionMode.Partial}
         nodesDraggable={false}
@@ -64,15 +64,6 @@ const Graph = ({ className }: GraphRendererProps) => {
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
         onPaneClick={() => push("/")}
-        onNodeClick={(e, node) => {
-          if (params.taskId === node.data.task.id) {
-            if (node.data.task.subtasks?.length > 0) {
-              push(`/tasks/${node.data.task.subtasks[0].id}`);
-            }
-          } else {
-            push(`/tasks/${node.data.task.id}`);
-          }
-        }}
       >
         <TaskRendererBackground />
       </ReactFlow>

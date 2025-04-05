@@ -5,15 +5,16 @@ import { useRouter } from "@campus/runtime/router";
 import { cn } from "@campus/ui/cn";
 import { Text } from "@campus/ui/Text";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
+import { MouseEventHandler } from "react";
 import { useGraphRenderer } from "../hooks/graph-renderer.hook";
 import { nodeSize } from "../utils/positioning.utils";
 
 type TaskNode = Node<{ task: Task; level: number }, "task">;
 
-export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
-  const { params } = useRouter();
+export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
+  const { params, push } = useRouter();
 
-  const { zoomLevel } = useGraphRenderer();
+  const { zoomLevel, getNode } = useGraphRenderer();
 
   const { mutate: createDependency } = useCreateDependency();
 
@@ -26,14 +27,42 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
   const shouldHide =
     (relativeSubTaskLevel < 1 && data.task.parent) || relativeSubTaskLevel > 2;
 
-  return !shouldHide ? (
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    let selectedNode: { id: string; parentId?: string; data: { task: Task } } =
+      {
+        id,
+        parentId,
+        data,
+      };
+    while (selectedNode.parentId) {
+      const parent = getNode(selectedNode.parentId);
+      if (parent && parent.data.level >= zoomLevel - 1) {
+        selectedNode = parent;
+      } else {
+        break;
+      }
+    }
+
+    if (params.taskId === selectedNode.id) {
+      if (selectedNode.data.task.subtasks?.length > 0) {
+        push(`/tasks/${selectedNode.data.task.subtasks[0].id}`);
+      }
+    } else {
+      push(`/tasks/${selectedNode.id}`);
+    }
+  };
+
+  return (
     <div
       className={cn(
-        "transition-opacity duration-300",
-        relativeSubTaskLevel > 1 && "opacity-20"
+        "transition-opacity duration-500",
+        relativeSubTaskLevel > 1 && "opacity-20",
+        shouldHide && "opacity-0"
       )}
+      onClick={handleClick}
     >
       <Handle
+        id={`${data.task.id}-top`}
         type="target"
         position={Position.Top}
         isConnectable={true}
@@ -52,6 +81,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         }}
       />
       <Handle
+        id={`${data.task.id}-bottom`}
         type="source"
         position={Position.Bottom}
         isConnectable={true}
@@ -86,7 +116,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
       >
         <Text
           className={cn(
-            `text-wrap text-center transition-opacity duration-300`,
+            `text-wrap text-center transition-opacity duration-500`,
             relativeSubTaskLevel < 1 && "opacity-0"
           )}
           style={{
@@ -102,7 +132,7 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         {data.task.subtasks.length > 0 && (
           <Text
             className={cn(
-              `text-[0.6rem] text-wrap text-center transition-opacity duration-300`,
+              `text-[0.6rem] text-wrap text-center transition-opacity duration-500`,
               relativeSubTaskLevel < 1 && "opacity-0"
             )}
             style={{
@@ -117,5 +147,5 @@ export const TaskNode = ({ data }: NodeProps<TaskNode>) => {
         )}
       </div>
     </div>
-  ) : null;
+  );
 };

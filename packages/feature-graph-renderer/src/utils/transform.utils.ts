@@ -36,6 +36,8 @@ export interface ReactFlowNode {
   type: "task";
   position: { x: number; y: number };
   data: { task: Task; level: number; size: number };
+  width: number;
+  height: number;
   parentId?: string;
 }
 
@@ -127,6 +129,8 @@ export function convertToReactFlow(hierarchy: ElkNodeData[]): ReactFlowGraph {
       id: node.id,
       type: "task",
       position: { x: node.x, y: node.y },
+      width: nodeSize / (Math.pow(5, node.level || 0) || 1),
+      height: nodeSize / (Math.pow(5, node.level || 0) || 1),
       parentId,
       data: { task: node.task, level: node.level, size: node.width },
     });

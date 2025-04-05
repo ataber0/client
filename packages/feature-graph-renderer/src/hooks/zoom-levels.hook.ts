@@ -1,5 +1,5 @@
 import { useReactFlow, useViewport } from "@xyflow/react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { nodeSize } from "../utils/positioning.utils";
 
 export interface Viewport {
@@ -20,7 +20,7 @@ const zoomValues = [
 ];
 
 export const useZoomLevels = () => {
-  const [isZooming, setIsZooming] = useState(false);
+  const isZooming = useRef<boolean>(false);
 
   const [viewport, setViewport] = useState<Viewport>({
     x: 0,
@@ -28,7 +28,7 @@ export const useZoomLevels = () => {
     zoomLevel: 0,
   });
 
-  const { setCenter, screenToFlowPosition } = useReactFlow();
+  const { setCenter } = useReactFlow();
 
   const { zoom } = useViewport();
 
@@ -48,35 +48,13 @@ export const useZoomLevels = () => {
     zoomToPosition();
   }, [viewport.x, viewport.y, targetZoom]);
 
-  const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
-    if (isZooming) return;
-
-    if (Math.abs(e.deltaY) < 10) return;
-
-    const mousePosition = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-
-    const zoomLevel =
-      e.deltaY < 0
-        ? Math.min(viewport.zoomLevel + 1, zoomValues.length - 1)
-        : Math.max(viewport.zoomLevel - 1, 0);
-
-    setIsZooming(true);
-    setViewport({ ...screenToFlowPosition(mousePosition), zoomLevel });
-    setTimeout(() => {
-      setIsZooming(false);
-    }, 800);
-  };
-
   return {
     zoom,
     targetZoom,
     zoomValues,
     isZooming,
+    viewport,
     zoomLevel: viewport.zoomLevel,
-    handleMouseWheel,
     zoomToPosition,
     setViewport,
   };

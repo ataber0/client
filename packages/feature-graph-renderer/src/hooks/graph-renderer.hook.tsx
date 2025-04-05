@@ -1,9 +1,19 @@
 import { Task } from "@campus/feature-tasks/types";
 import { useRouter } from "@campus/runtime/router";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { nodeSize, positionNodes } from "../utils/positioning.utils";
+import { useReactFlow } from "@xyflow/react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { positionNodes } from "../utils/positioning.utils";
 import {
   convertToReactFlow,
+  ReactFlowEdge,
   ReactFlowGraph,
   ReactFlowNode,
 } from "../utils/transform.utils";
@@ -14,6 +24,9 @@ const GraphRendererContext = createContext<
       tasks: Task[];
       activeTask: Task | undefined;
       reactFlow: ReactFlowGraph;
+      ref: React.RefObject<HTMLDivElement | null>;
+      handleMouseWheel: (e: React.WheelEvent<HTMLDivElement>) => void;
+      getNode: (id: string) => ReactFlowNode | undefined;
     })
   | undefined
 >(undefined);
@@ -37,14 +50,53 @@ export const GraphRendererProvider = ({
   tasks: Task[];
   children: React.ReactNode;
 }) => {
+  const { getNode } = useReactFlow<ReactFlowNode, ReactFlowEdge>();
+
+  const ref = useRef<HTMLDivElement>(null);
+
   const zoomLevels = useZoomLevels();
 
-  const { params } = useRouter();
+  const { push, params } = useRouter();
 
   const [reactFlow, setReactFlow] = useState<ReactFlowGraph>({
     nodes: [],
     edges: [],
   });
+
+  const activeTask = useMemo(() => {
+    return tasks.find((task) => task.id === params.taskId);
+  }, [tasks, params.taskId]);
+
+  const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (zoomLevels.isZooming.current) return;
+
+      if (Math.abs(e.deltaY) < 10) return;
+
+      zoomLevels.isZooming.current = true;
+
+      setTimeout(() => {
+        zoomLevels.isZooming.current = false;
+      }, 800);
+
+      if (e.deltaY < 0) {
+        const element = document.elementFromPoint(e.clientX, e.clientY);
+        if (element) {
+          const clickEvent = new MouseEvent("click", {
+            view: window,
+            bubbles: true,
+            cancelable: true,
+          });
+          element.dispatchEvent(clickEvent);
+        }
+
+        return;
+      }
+
+      push(activeTask?.parent ? `/tasks/${activeTask.parent.id}` : "/");
+    },
+    [zoomLevels.isZooming, zoomLevels.viewport]
+  );
 
   useEffect(() => {
     const updatePositions = async () => {
@@ -56,18 +108,14 @@ export const GraphRendererProvider = ({
     updatePositions();
   }, [tasks]);
 
-  const activeTask = useMemo(() => {
-    return tasks.find((task) => task.id === params.taskId);
-  }, [tasks, params.taskId]);
-
   useEffect(() => {
     const originalNode = reactFlow.nodes.find(
       (node) => node.data.task.id === params.taskId
     );
     if (originalNode) {
       let node: ReactFlowNode | undefined = originalNode;
-      let x = nodeSize / (Math.pow(5, node.data.level || 0) || 1) / 2;
-      let y = nodeSize / (Math.pow(5, node.data.level || 0) || 1) / 2;
+      let x = node.width / 2;
+      let y = node.height / 2;
       while (node) {
         x += node.position.x;
         y += node.position.y;
@@ -84,7 +132,15 @@ export const GraphRendererProvider = ({
 
   return (
     <GraphRendererContext.Provider
-      value={{ ...zoomLevels, tasks, activeTask, reactFlow }}
+      value={{
+        ...zoomLevels,
+        tasks,
+        activeTask,
+        reactFlow,
+        ref,
+        handleMouseWheel,
+        getNode,
+      }}
     >
       {children}
     </GraphRendererContext.Provider>
