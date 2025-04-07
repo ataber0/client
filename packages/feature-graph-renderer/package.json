@@ -22,9 +22,9 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.4",
     "@xyflow/react": "^12.5.3",
     "canvas": "^3.1.0",
-    "elkjs": "^0.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-konva": "^19.0.3"

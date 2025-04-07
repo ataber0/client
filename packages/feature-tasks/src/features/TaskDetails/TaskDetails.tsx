@@ -28,7 +28,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
   const handleRemoveTask = async () => {
     await removeTask({ taskId });
-    router.push("/");
+    router.push(data?.parent ? `/tasks/${data.parent.id}` : "/");
   };
 
   const { mutateAsync: removeDependency } = useRemoveDependency();
