@@ -26,11 +26,6 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleRemoveTask = async () => {
-    await removeTask({ taskId });
-    router.push(data?.parent ? `/tasks/${data.parent.id}` : "/");
-  };
-
   const { mutateAsync: removeDependency } = useRemoveDependency();
 
   return data ? (
@@ -56,7 +51,11 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             <Edit size={16} className="shrink-0" />
           </Button>
 
-          <Button variant="text" color="danger" onClick={handleRemoveTask}>
+          <Button
+            variant="text"
+            color="danger"
+            onClick={() => removeTask({ taskId })}
+          >
             <Trash className="shrink-0" size={16} />
           </Button>
         </div>
