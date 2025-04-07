@@ -12,11 +12,11 @@ const baseZoomLevel = nodeSize / 150000000;
 
 const zoomValues = [
   baseZoomLevel,
-  baseZoomLevel * 5,
-  baseZoomLevel * 25,
-  baseZoomLevel * 125,
-  baseZoomLevel * 625,
-  baseZoomLevel * 3125,
+  baseZoomLevel * 4,
+  baseZoomLevel * 16,
+  baseZoomLevel * 64,
+  baseZoomLevel * 256,
+  baseZoomLevel * 1024,
 ];
 
 export const useZoomLevels = () => {
