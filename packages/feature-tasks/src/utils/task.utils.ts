@@ -26,3 +26,7 @@ export const getStatusColor = (task: Task) => {
   if (isBlocked(task)) return "gray";
   return "darkorange";
 };
+
+export const isProject = (task: Task) => {
+  return task.parent === null && task.subtasks.length > 0;
+};

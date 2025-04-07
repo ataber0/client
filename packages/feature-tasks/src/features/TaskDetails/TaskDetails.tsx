@@ -1,10 +1,10 @@
-import { useRouter } from "@campus/runtime/router";
 import { Button } from "@campus/ui/Button";
 import { ChevronLeft, Edit, Link2Off, Trash } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
 import { Modal } from "@campus/ui/Modal";
 import { Text } from "@campus/ui/Text";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import { TaskList } from "../../components/TaskList/TaskList";
 import { useRemoveDependency } from "../../data-access/remove-dependency.data-access";
 import { useRemoveTask } from "../../data-access/remove-task.data-access";
 import { useTaskDetails } from "../../data-access/task-details.data-access";
@@ -19,8 +19,6 @@ export interface TaskDetailsProps {
 
 export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
   const { data } = useTaskDetails(taskId);
-
-  const router = useRouter();
 
   const { mutateAsync: removeTask } = useRemoveTask();
 
@@ -78,9 +76,16 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           initialPayload={{
             parentId: data.id,
           }}
-          onRemoveRelationship={(subtask) => removeTask({ taskId: subtask.id })}
+          actions={({ task }) => (
+            <Button
+              variant="text"
+              color="danger"
+              onClick={() => removeTask({ taskId: task.id })}
+            >
+              <Trash size={14} />
+            </Button>
+          )}
         />
-
         <hr className="border-gray-600" />
 
         <RelationshipTaskList
@@ -90,12 +95,20 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             parentId: data.parent?.id,
             downstreamId: data.id,
           }}
-          onRemoveRelationship={(dependency) =>
-            removeDependency({
-              upstreamId: data.id,
-              downstreamId: dependency.id,
-            })
-          }
+          actions={({ task }) => (
+            <Button
+              variant="text"
+              color="danger"
+              onClick={() =>
+                removeDependency({
+                  upstreamId: data.id,
+                  downstreamId: task.id,
+                })
+              }
+            >
+              <Link2Off size={14} />
+            </Button>
+          )}
         />
 
         <hr className="border-gray-600" />
@@ -107,12 +120,20 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             parentId: data.parent?.id,
             upstreamId: data.id,
           }}
-          onRemoveRelationship={(dependency) =>
-            removeDependency({
-              upstreamId: dependency.id,
-              downstreamId: data.id,
-            })
-          }
+          actions={({ task }) => (
+            <Button
+              variant="text"
+              color="danger"
+              onClick={() =>
+                removeDependency({
+                  upstreamId: task.id,
+                  downstreamId: data.id,
+                })
+              }
+            >
+              <Link2Off size={14} />
+            </Button>
+          )}
         />
 
         <hr />
@@ -132,13 +153,13 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
 const RelationshipTaskList = ({
   tasks,
   header,
+  actions,
   initialPayload,
-  onRemoveRelationship,
 }: {
   tasks: TaskBase[];
   header: string;
+  actions: ({ task, index }: { task: TaskBase; index: number }) => ReactNode;
   initialPayload: Partial<CreateTaskPayload>;
-  onRemoveRelationship: (dependency: TaskBase) => void;
 }) => {
   const uncompletedTasks = tasks.filter((task) => task.status !== "Done");
 
@@ -151,7 +172,7 @@ const RelationshipTaskList = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
-        <Text className="pl-2 text-sm text-gray-400">{header}</Text>
+        <Text className="text-sm text-gray-400">{header}</Text>
 
         <CreateTaskModalButton key={header} initialPayload={initialPayload} />
 
@@ -166,28 +187,7 @@ const RelationshipTaskList = ({
         )}
       </div>
 
-      {displayTasks.map((childTask) => (
-        <Link
-          href={`/tasks/${childTask.id}`}
-          className="flex gap-3 items-center"
-        >
-          <TaskCheckbox task={childTask} />
-
-          <Text className="text-xs">{childTask.name}</Text>
-
-          <Button
-            className="ml-auto shrink-0"
-            variant="text"
-            color="danger"
-            onClick={(e) => {
-              e.preventDefault();
-              onRemoveRelationship(childTask);
-            }}
-          >
-            <Link2Off size={16} />
-          </Button>
-        </Link>
-      ))}
+      <TaskList tasks={displayTasks} actions={actions} className="gap-2" />
     </div>
   );
 };

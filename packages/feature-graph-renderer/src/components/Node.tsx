@@ -14,7 +14,7 @@ type TaskNode = Node<{ task: Task; level: number }, "task">;
 export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
   const { params, push } = useRouter();
 
-  const { zoomLevel, getNode } = useGraphRenderer();
+  const { zoomLevel, getNode, activeTask } = useGraphRenderer();
 
   const { mutate: createDependency } = useCreateDependency();
 
@@ -24,8 +24,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
 
   const handleSize = nodeSize * 0.1 * scale;
 
-  const shouldHide =
-    (relativeSubTaskLevel < 1 && data.task.parent) || relativeSubTaskLevel > 2;
+  const shouldHide = data.task.parent?.id !== activeTask?.parent?.id;
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     let selectedNode: { id: string; parentId?: string; data: { task: Task } } =
