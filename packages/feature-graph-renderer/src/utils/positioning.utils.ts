@@ -101,7 +101,7 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
     // Set graph direction and node spacing based on level
     const levelSpacing = baseSpacing / Math.pow(5, level);
     graph.setGraph({
-      rankdir: "TB", // Top to bottom layout
+      rankdir: "LR",
       nodesep: levelSpacing,
       ranksep: levelSpacing,
     });

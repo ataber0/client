@@ -64,7 +64,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
       <Handle
         id={`${data.task.id}-top`}
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         isConnectable={true}
         style={{
           width: handleSize,
@@ -83,7 +83,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
       <Handle
         id={`${data.task.id}-bottom`}
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         isConnectable={true}
         style={{
           width: handleSize,
