@@ -23,7 +23,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
 
   const relativeSubTaskLevel = zoomLevel - data.level;
 
-  const scale = nodeSize / displayNodeSize / Math.pow(4, data.level);
+  const scale = nodeSize / displayNodeSize / Math.pow(2, data.level);
 
   const handleSize = 15;
 

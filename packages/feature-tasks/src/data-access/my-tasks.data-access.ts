@@ -1,7 +1,7 @@
 import { useHttpQuery } from "@campus/runtime/query";
 import { useMemo } from "react";
 import { Task } from "../types/task.models";
-import { isActive, isProject } from "../utils/task.utils";
+import { isActive } from "../utils/task.utils";
 
 const select = (tasks: Task[]) => {
   return tasks.sort((a, b) => {
@@ -24,9 +24,5 @@ export const useMyTasks = () => {
     return query.data?.filter(isActive) ?? [];
   }, [query.data]);
 
-  const projects = useMemo(() => {
-    return query.data?.filter(isProject) ?? [];
-  }, [query.data]);
-
-  return { ...query, activeTasks, projects, incompleteTasks };
+  return { ...query, activeTasks, incompleteTasks };
 };

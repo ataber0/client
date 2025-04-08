@@ -9,7 +9,7 @@ export interface MyTasksProps {
 }
 
 export const MyTasks = ({ className }: MyTasksProps) => {
-  const { activeTasks, projects } = useMyTasks();
+  const { activeTasks } = useMyTasks();
 
   if (!activeTasks) return null;
 
@@ -22,12 +22,6 @@ export const MyTasks = ({ className }: MyTasksProps) => {
       </div>
 
       {activeTasks && <TaskList tasks={activeTasks} />}
-
-      <Text as="h2" className="p-2">
-        Projects
-      </Text>
-
-      {projects && <TaskList tasks={projects} />}
     </div>
   );
 };

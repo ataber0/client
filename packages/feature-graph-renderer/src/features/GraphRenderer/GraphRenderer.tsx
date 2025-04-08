@@ -39,7 +39,7 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues, reactFlow, ref, zoomLevel, zoom } =
+  const { handleMouseWheel, reactFlow, ref, zoomLevel, zoom, baseZoomLevel } =
     useGraphRenderer();
 
   return (
@@ -55,15 +55,15 @@ const Graph = ({ className }: GraphRendererProps) => {
         nodesDraggable={false}
         zoomOnScroll={false}
         zoomOnPinch={false}
-        maxZoom={zoomValues[zoomValues.length - 1]}
-        minZoom={zoomValues[0]}
+        maxZoom={Infinity}
+        minZoom={baseZoomLevel}
         nodes={reactFlow.nodes}
         edges={reactFlow.edges}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
         connectionLineStyle={{
-          strokeWidth: nodeSize / 5 / Math.pow(4, zoomLevel),
+          strokeWidth: nodeSize / 5 / Math.pow(2, zoomLevel),
           transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
         }}
       >

@@ -8,16 +8,7 @@ export interface Viewport {
   zoomLevel: number;
 }
 
-const baseZoomLevel = 50 / nodeSize;
-
-const zoomValues = [
-  baseZoomLevel,
-  baseZoomLevel * 4,
-  baseZoomLevel * 16,
-  baseZoomLevel * 64,
-  baseZoomLevel * 256,
-  baseZoomLevel * 1024,
-];
+const baseZoomLevel = 70 / nodeSize;
 
 export const useZoomLevels = () => {
   const isZooming = useRef<boolean>(false);
@@ -33,7 +24,7 @@ export const useZoomLevels = () => {
   const { zoom } = useViewport();
 
   const targetZoom = useMemo(
-    () => zoomValues[viewport.zoomLevel],
+    () => baseZoomLevel * Math.pow(2, viewport.zoomLevel),
     [viewport.zoomLevel]
   );
 
@@ -51,9 +42,9 @@ export const useZoomLevels = () => {
   return {
     zoom,
     targetZoom,
-    zoomValues,
     isZooming,
     viewport,
+    baseZoomLevel,
     zoomLevel: viewport.zoomLevel,
     zoomToPosition,
     setViewport,

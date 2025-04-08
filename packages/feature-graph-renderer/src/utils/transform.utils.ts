@@ -22,7 +22,7 @@ export interface ReactFlowEdge {
   type: "taskEdge";
   source: string;
   target: string;
-  data: { color: string; level: number };
+  data: { color: string; level: number; parentId?: string };
 }
 
 export function convertToReactFlow(
@@ -50,8 +50,8 @@ export function convertToReactFlow(
       id: node.id,
       type: "task",
       position: { x: node.x, y: node.y },
-      width: nodeSize / (Math.pow(4, node.level || 0) || 1),
-      height: nodeSize / (Math.pow(4, node.level || 0) || 1),
+      width: nodeSize / (Math.pow(2, node.level || 0) || 1),
+      height: nodeSize / (Math.pow(2, node.level || 0) || 1),
       parentId,
       data: { task: node.task, level: node.level, size: node.width },
     });
@@ -69,6 +69,7 @@ export function convertToReactFlow(
             data: {
               color: getStatusColor(nodeMap.get(dependency.id)!.task),
               level: node.level,
+              parentId: node.parentId,
             },
           });
         }
