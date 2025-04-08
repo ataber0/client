@@ -132,7 +132,7 @@ export const GraphRendererProvider = ({
         zoomLevel: 0,
       }));
     }
-  }, [params.taskId]);
+  }, [params.taskId, reactFlow.nodes]);
 
   return (
     <GraphRendererContext.Provider
