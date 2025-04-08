@@ -14,6 +14,8 @@ export const TaskEdge = ({
 }: EdgeProps<TaskEdge>) => {
   const { zoom, zoomLevel } = useGraphRenderer();
 
+  const strokeWidth = 10 / zoom;
+
   const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -34,7 +36,7 @@ export const TaskEdge = ({
       )}
       style={{
         stroke: data?.color,
-        strokeWidth: 10 / zoom,
+        strokeWidth,
         transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
       }}
     />

@@ -64,7 +64,7 @@ const Graph = ({ className }: GraphRendererProps) => {
         zoomOnDoubleClick={false}
         connectionLineStyle={{
           strokeWidth: nodeSize / 5 / Math.pow(4, zoomLevel),
-          transform: `translate(${5 / zoom}px, ${5 / zoom}px)`,
+          transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
         }}
       >
         <TaskRendererBackground />
