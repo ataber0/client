@@ -39,7 +39,7 @@ export const GraphRenderer = ({ className }: GraphRendererProps) => {
 };
 
 const Graph = ({ className }: GraphRendererProps) => {
-  const { handleMouseWheel, zoomValues, reactFlow, ref, zoomLevel } =
+  const { handleMouseWheel, zoomValues, reactFlow, ref, zoomLevel, zoom } =
     useGraphRenderer();
 
   return (
@@ -63,7 +63,8 @@ const Graph = ({ className }: GraphRendererProps) => {
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
         connectionLineStyle={{
-          strokeWidth: nodeSize / 5 / Math.pow(5, zoomLevel),
+          strokeWidth: nodeSize / 5 / Math.pow(4, zoomLevel),
+          transform: `translate(${5 / zoom}px, ${5 / zoom}px)`,
         }}
       >
         <TaskRendererBackground />

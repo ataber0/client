@@ -58,8 +58,8 @@ export function buildHierarchy(tasks: Task[]): PositionedNodeInput[] {
   function setLevels(nodes: PositionedNodeInput[], level: number) {
     nodes.forEach((node) => {
       node.level = level;
-      node.height = nodeSize / Math.pow(5, level + 1);
-      node.width = nodeSize / Math.pow(5, level + 1);
+      node.height = nodeSize / Math.pow(4, level + 1);
+      node.width = nodeSize / Math.pow(4, level + 1);
       if (node.children.length > 0) {
         setLevels(node.children, level + 1);
       }
@@ -99,7 +99,7 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
     graph.setDefaultEdgeLabel(() => ({}));
 
     // Set graph direction and node spacing based on level
-    const levelSpacing = baseSpacing / Math.pow(5, level);
+    const levelSpacing = baseSpacing / Math.pow(4, level);
     graph.setGraph({
       rankdir: "LR",
       nodesep: levelSpacing,

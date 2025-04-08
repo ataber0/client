@@ -28,13 +28,14 @@ export const TaskEdge = ({
     <BaseEdge
       path={edgePath}
       className={cn(
-        "opacity-10 transition-opacity duration-600",
+        "opacity-0 transition-opacity duration-600",
         zoomLevel === 0 && data?.level === 0 && "opacity-60",
         zoomLevel - 1 === data?.level && "opacity-60"
       )}
       style={{
         stroke: data?.color,
         strokeWidth: 10 / zoom,
+        transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
       }}
     />
   );

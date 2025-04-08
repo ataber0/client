@@ -3,6 +3,7 @@ import { Task } from "@campus/feature-tasks/types";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
 import { cn } from "@campus/ui/cn";
+import { Workflow } from "@campus/ui/Icon";
 import { Text } from "@campus/ui/Text";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { MouseEventHandler } from "react";
@@ -10,6 +11,8 @@ import { useGraphRenderer } from "../hooks/graph-renderer.hook";
 import { nodeSize } from "../utils/positioning.utils";
 
 type TaskNode = Node<{ task: Task; level: number }, "task">;
+
+const displayNodeSize = 200;
 
 export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
   const { params, push } = useRouter();
@@ -20,9 +23,9 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
 
   const relativeSubTaskLevel = zoomLevel - data.level;
 
-  const scale = 1 / (Math.pow(5, data.level) || 1);
+  const scale = nodeSize / displayNodeSize / Math.pow(4, data.level);
 
-  const handleSize = nodeSize * 0.1 * scale;
+  const handleSize = 15;
 
   const shouldHide = data.task.parent?.id !== activeTask?.parent?.id;
 
@@ -58,6 +61,12 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
         relativeSubTaskLevel > 1 && "opacity-20",
         shouldHide && "opacity-0"
       )}
+      style={{
+        transformOrigin: "top left",
+        transform: `scale(${scale})`,
+        width: displayNodeSize,
+        height: displayNodeSize,
+      }}
       onClick={handleClick}
     >
       <Handle
@@ -65,18 +74,17 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
         type="target"
         position={Position.Left}
         isConnectable={true}
-        style={{
-          width: handleSize,
-          height: handleSize,
-          minWidth: handleSize,
-          minHeight: handleSize,
-          borderWidth: 50 * scale,
-        }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,
             downstreamId: params.source,
           });
+        }}
+        style={{
+          width: handleSize,
+          height: handleSize,
+          minWidth: handleSize,
+          minHeight: handleSize,
         }}
       />
       <Handle
@@ -84,65 +92,55 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
         type="source"
         position={Position.Right}
         isConnectable={true}
-        style={{
-          width: handleSize,
-          height: handleSize,
-          minWidth: handleSize,
-          minHeight: handleSize,
-          borderWidth: 50 * scale,
-        }}
         onConnect={(params) => {
           createDependency({
             upstreamId: params.target,
             downstreamId: params.source,
           });
         }}
+        style={{
+          width: handleSize,
+          height: handleSize,
+          minWidth: handleSize,
+          minHeight: handleSize,
+        }}
       />
       <div
         className={cn(
-          "flex flex-col items-center justify-center gap-2 rounded-xl border-gray-700",
+          "flex flex-col gap-2 rounded-xl border-gray-700 w-full h-full border-8 p-2",
           params.taskId === data.task.id && "border-white"
         )}
         style={{
           backgroundColor: getStatusColor(data.task),
-          width: nodeSize * scale,
-          height: nodeSize * scale,
-          padding: nodeSize * 0.1 * scale,
-          borderWidth: nodeSize * 0.07 * scale,
-          borderRadius: nodeSize * 0.07 * scale,
-          gap: nodeSize * 0.12 * scale,
         }}
       >
         <Text
           className={cn(
-            `text-wrap text-center transition-opacity duration-500`,
+            `text-wrap transition-opacity duration-500 origin-top-left`,
             relativeSubTaskLevel < 1 && "opacity-0"
           )}
-          style={{
-            transform: `scale(${nodeSize * 0.005 * scale})`,
-            width: `calc(100% / ${nodeSize * 0.004 * scale})`,
-            fontSize: "1rem",
-            lineHeight: "1.2rem",
-          }}
         >
           {data.task.name}
         </Text>
 
         {data.task.subtasks.length > 0 && (
-          <Text
+          <div
             className={cn(
-              `text-[0.6rem] text-wrap text-center transition-opacity duration-500`,
+              `flex flex-row items-center gap-1 transition-opacity duration-500 origin-top-left`,
               relativeSubTaskLevel < 1 && "opacity-0"
             )}
-            style={{
-              transform: `scale(${nodeSize * 0.005 * scale})`,
-              width: `calc(100% / ${nodeSize * 0.004 * scale})`,
-            }}
           >
-            {data.task.subtasks.filter((task) => task.status === "Done").length}
-            {"/"}
-            {data.task.subtasks.length} Sub Tasks Complete
-          </Text>
+            <Workflow size={16} />
+
+            <Text className={cn(`text-wrap`)}>
+              {
+                data.task.subtasks.filter((task) => task.status === "Done")
+                  .length
+              }
+              {"/"}
+              {data.task.subtasks.length}
+            </Text>
+          </div>
         )}
       </div>
     </div>

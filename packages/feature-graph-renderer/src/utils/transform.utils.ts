@@ -50,8 +50,8 @@ export function convertToReactFlow(
       id: node.id,
       type: "task",
       position: { x: node.x, y: node.y },
-      width: nodeSize / (Math.pow(5, node.level || 0) || 1),
-      height: nodeSize / (Math.pow(5, node.level || 0) || 1),
+      width: nodeSize / (Math.pow(4, node.level || 0) || 1),
+      height: nodeSize / (Math.pow(4, node.level || 0) || 1),
       parentId,
       data: { task: node.task, level: node.level, size: node.width },
     });

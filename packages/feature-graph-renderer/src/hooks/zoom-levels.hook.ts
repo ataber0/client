@@ -8,7 +8,7 @@ export interface Viewport {
   zoomLevel: number;
 }
 
-const baseZoomLevel = nodeSize / 150000000;
+const baseZoomLevel = 50 / nodeSize;
 
 const zoomValues = [
   baseZoomLevel,
