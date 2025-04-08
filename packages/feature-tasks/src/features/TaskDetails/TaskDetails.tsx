@@ -1,3 +1,4 @@
+import { useRouter } from "@campus/runtime/router";
 import { Button } from "@campus/ui/Button";
 import { ChevronLeft, Edit, Link2Off, Trash } from "@campus/ui/Icon";
 import { Link } from "@campus/ui/Link";
@@ -18,13 +19,20 @@ export interface TaskDetailsProps {
 }
 
 export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
-  const { data } = useTaskDetails(taskId);
+  const { push } = useRouter();
 
-  const { mutateAsync: removeTask } = useRemoveTask();
+  const { data } = useTaskDetails(taskId);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { mutateAsync: removeTask } = useRemoveTask();
+
   const { mutateAsync: removeDependency } = useRemoveDependency();
+
+  const handleRemoveTask = async () => {
+    await removeTask({ taskId });
+    push(data?.parent ? `/tasks/${data.parent.id}` : "/");
+  };
 
   return data ? (
     <>
@@ -49,11 +57,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
             <Edit size={16} className="shrink-0" />
           </Button>
 
-          <Button
-            variant="text"
-            color="danger"
-            onClick={() => removeTask({ taskId })}
-          >
+          <Button variant="text" color="danger" onClick={handleRemoveTask}>
             <Trash className="shrink-0" size={16} />
           </Button>
         </div>
