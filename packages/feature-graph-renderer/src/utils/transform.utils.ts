@@ -14,6 +14,7 @@ export interface ReactFlowNode {
   data: { task: Task; level: number; size: number };
   width: number;
   height: number;
+  hidden: boolean;
   parentId?: string;
 }
 
@@ -26,7 +27,9 @@ export interface ReactFlowEdge {
 }
 
 export function convertToReactFlow(
-  hierarchy: PositionedNode[]
+  hierarchy: PositionedNode[],
+  zoomLevel: number,
+  activeTask?: Task
 ): ReactFlowGraph {
   const nodes: ReactFlowNode[] = [];
   const edges: ReactFlowEdge[] = [];
@@ -53,6 +56,7 @@ export function convertToReactFlow(
       width: nodeSize / (Math.pow(2, node.level || 0) || 1),
       height: nodeSize / (Math.pow(2, node.level || 0) || 1),
       parentId,
+      hidden: node.task.parent?.id !== activeTask?.parent?.id,
       data: { task: node.task, level: node.level, size: node.width },
     });
 

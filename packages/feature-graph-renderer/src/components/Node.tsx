@@ -3,6 +3,7 @@ import { Task } from "@campus/feature-tasks/types";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { useRouter } from "@campus/runtime/router";
 import { cn } from "@campus/ui/cn";
+import { Fade } from "@campus/ui/Fade";
 import { Workflow } from "@campus/ui/Icon";
 import { Text } from "@campus/ui/Text";
 import { Handle, Node, NodeProps, Position } from "@xyflow/react";
@@ -17,7 +18,7 @@ const displayNodeSize = 200;
 export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
   const { params, push } = useRouter();
 
-  const { zoomLevel, getNode, activeTask } = useGraphRenderer();
+  const { zoomLevel, getNode } = useGraphRenderer();
 
   const { mutate: createDependency } = useCreateDependency();
 
@@ -26,8 +27,6 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
   const scale = nodeSize / displayNodeSize / Math.pow(2, data.level);
 
   const handleSize = 15;
-
-  const shouldHide = data.task.parent?.id !== activeTask?.parent?.id;
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     let selectedNode: { id: string; parentId?: string; data: { task: Task } } =
@@ -55,12 +54,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
   };
 
   return (
-    <div
-      className={cn(
-        "transition-opacity duration-500",
-        relativeSubTaskLevel > 1 && "opacity-20",
-        shouldHide && "opacity-0"
-      )}
+    <Fade
       style={{
         transformOrigin: "top left",
         transform: `scale(${scale})`,
@@ -143,6 +137,6 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
           </div>
         )}
       </div>
-    </div>
+    </Fade>
   );
 };

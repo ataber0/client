@@ -18,7 +18,7 @@ export interface PositionedNode extends PositionedNodeInput {
 }
 
 export const baseSpacing = 100000;
-export const nodeSize = 80000;
+export const nodeSize = 100000;
 
 export function buildHierarchy(tasks: Task[]): PositionedNodeInput[] {
   const nodeMap = new Map<string, PositionedNodeInput>();
