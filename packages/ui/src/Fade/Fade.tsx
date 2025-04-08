@@ -11,7 +11,7 @@ interface FadeProps extends HTMLAttributes<HTMLDivElement> {
 export const Fade = ({
   children,
   in: inProp = true,
-  timeout = 5000,
+  timeout = 500,
   style,
   className,
   ...props
