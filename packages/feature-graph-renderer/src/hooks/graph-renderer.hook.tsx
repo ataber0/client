@@ -79,6 +79,7 @@ export const GraphRendererProvider = ({
         viewport.isZooming.current = false;
       }, 800);
 
+      // If the user is zooming in, emulate a click at that position
       if (e.deltaY < 0) {
         const element = document.elementFromPoint(e.clientX, e.clientY);
         if (element) {
