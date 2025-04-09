@@ -29,7 +29,6 @@ export interface ReactFlowEdge {
 
 export function convertToReactFlow(
   hierarchy: PositionedNode[],
-  zoomLevel: number,
   activeTask?: Task
 ): ReactFlowGraph {
   const nodes: ReactFlowNode[] = [];

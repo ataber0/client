@@ -101,16 +101,12 @@ export const GraphRendererProvider = ({
   useEffect(() => {
     const updatePositions = async () => {
       const positionedNodes = await positionNodes(tasks);
-      const reactFlow = convertToReactFlow(
-        positionedNodes,
-        zoomLevels.zoomLevel,
-        activeTask
-      );
+      const reactFlow = convertToReactFlow(positionedNodes, activeTask);
       setReactFlow(reactFlow);
     };
 
     updatePositions();
-  }, [tasks, activeTask, zoomLevels.zoomLevel]);
+  }, [tasks, activeTask]);
 
   useEffect(() => {
     const originalNode = reactFlow.nodes.find(
