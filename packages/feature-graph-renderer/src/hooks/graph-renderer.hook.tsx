@@ -16,7 +16,7 @@ import {
   ReactFlowEdge,
   ReactFlowGraph,
   ReactFlowNode,
-} from "../utils/transform.utils";
+} from "../utils/react-flow.utils";
 import { useZoomLevels } from "./zoom-levels.hook";
 
 const GraphRendererContext = createContext<
