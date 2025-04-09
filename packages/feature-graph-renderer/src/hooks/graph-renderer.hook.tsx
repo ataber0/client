@@ -17,10 +17,10 @@ import {
   ReactFlowGraph,
   ReactFlowNode,
 } from "../utils/react-flow.utils";
-import { useZoomLevels } from "./zoom-levels.hook";
+import { useViewport } from "./viewport.hook";
 
 const GraphRendererContext = createContext<
-  | (ReturnType<typeof useZoomLevels> & {
+  | (ReturnType<typeof useViewport> & {
       tasks: Task[];
       activeTask: Task | undefined;
       reactFlow: ReactFlowGraph;
@@ -54,7 +54,7 @@ export const GraphRendererProvider = ({
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const zoomLevels = useZoomLevels();
+  const viewport = useViewport();
 
   const { push, params } = useRouter();
 
@@ -69,14 +69,14 @@ export const GraphRendererProvider = ({
 
   const handleMouseWheel: React.WheelEventHandler<HTMLDivElement> = useCallback(
     (e) => {
-      if (zoomLevels.isZooming.current) return;
+      if (viewport.isZooming.current) return;
 
       if (Math.abs(e.deltaY) < 10) return;
 
-      zoomLevels.isZooming.current = true;
+      viewport.isZooming.current = true;
 
       setTimeout(() => {
-        zoomLevels.isZooming.current = false;
+        viewport.isZooming.current = false;
       }, 800);
 
       if (e.deltaY < 0) {
@@ -95,9 +95,10 @@ export const GraphRendererProvider = ({
 
       push(activeTask?.parent ? `/tasks/${activeTask.parent.id}` : "/");
     },
-    [zoomLevels.isZooming, zoomLevels.viewport]
+    [viewport.isZooming, viewport.viewport]
   );
 
+  // Update the React Flow graph when the tasks or active task changes
   useEffect(() => {
     const updatePositions = async () => {
       const positionedNodes = await positionNodes(tasks);
@@ -108,6 +109,7 @@ export const GraphRendererProvider = ({
     updatePositions();
   }, [tasks, activeTask]);
 
+  // Set Viewport to the active task
   useEffect(() => {
     const originalNode = reactFlow.nodes.find(
       (node) => node.data.task.id === params.taskId
@@ -121,9 +123,9 @@ export const GraphRendererProvider = ({
         y += node.position.y;
         node = reactFlow.nodes.find((n) => n.id === node?.parentId);
       }
-      zoomLevels.setViewport({ x, y, zoomLevel: originalNode.data.level + 1 });
+      viewport.setViewport({ x, y, zoomLevel: originalNode.data.level + 1 });
     } else {
-      zoomLevels.setViewport((existing) => ({
+      viewport.setViewport((existing) => ({
         ...existing,
         zoomLevel: 0,
       }));
@@ -133,7 +135,7 @@ export const GraphRendererProvider = ({
   return (
     <GraphRendererContext.Provider
       value={{
-        ...zoomLevels,
+        ...viewport,
         tasks,
         activeTask,
         reactFlow,
