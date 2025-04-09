@@ -13,6 +13,7 @@ import {
   useGraphRenderer,
 } from "../../hooks/graph-renderer.hook";
 import { nodeSize } from "../../utils/positioning.utils";
+import { getBaseScale } from "../../utils/scale.utils";
 
 interface GraphRendererProps {
   className?: string;
@@ -63,7 +64,7 @@ const Graph = ({ className }: GraphRendererProps) => {
         edgeTypes={edgeTypes}
         zoomOnDoubleClick={false}
         connectionLineStyle={{
-          strokeWidth: nodeSize / 5 / Math.pow(2, zoomLevel),
+          strokeWidth: nodeSize / 5 / getBaseScale(zoomLevel),
           // This transform hacks around issues with React Flow and scaling Node components
           // affecting the edge rendering
           transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,

@@ -1,6 +1,7 @@
 import { useReactFlow, useViewport } from "@xyflow/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { nodeSize } from "../utils/positioning.utils";
+import { getBaseScale } from "../utils/scale.utils";
 
 export interface Viewport {
   x: number;
@@ -24,7 +25,7 @@ export const useZoomLevels = () => {
   const { zoom } = useViewport();
 
   const targetZoom = useMemo(
-    () => baseZoomLevel * Math.pow(2, viewport.zoomLevel),
+    () => baseZoomLevel * getBaseScale(viewport.zoomLevel),
     [viewport.zoomLevel]
   );
 

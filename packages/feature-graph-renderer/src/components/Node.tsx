@@ -10,6 +10,7 @@ import { Handle, Node, NodeProps, Position } from "@xyflow/react";
 import { MouseEventHandler } from "react";
 import { useGraphRenderer } from "../hooks/graph-renderer.hook";
 import { nodeSize } from "../utils/positioning.utils";
+import { getBaseScale } from "../utils/scale.utils";
 
 type TaskNode = Node<{ task: Task; level: number }, "task">;
 
@@ -24,7 +25,7 @@ export const TaskNode = ({ id, parentId, data }: NodeProps<TaskNode>) => {
 
   const relativeSubTaskLevel = zoomLevel - data.level;
 
-  const scale = nodeSize / displayNodeSize / Math.pow(2, data.level);
+  const scale = nodeSize / displayNodeSize / getBaseScale(data.level);
 
   const handleSize = 15;
 

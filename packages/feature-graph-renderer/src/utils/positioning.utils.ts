@@ -1,5 +1,6 @@
 import { Task } from "@campus/feature-tasks/types";
 import { graphlib, layout } from "@dagrejs/dagre";
+import { getBaseScale } from "./scale.utils";
 
 export interface PositionedNodeInput {
   id: string;
@@ -56,10 +57,12 @@ export function buildHierarchy(tasks: Task[]): PositionedNodeInput[] {
   });
 
   function setLevels(nodes: PositionedNodeInput[], level: number) {
+    const size = nodeSize / getBaseScale(level + 1);
+
     nodes.forEach((node) => {
       node.level = level;
-      node.height = nodeSize / Math.pow(2, level + 1);
-      node.width = nodeSize / Math.pow(2, level + 1);
+      node.height = size;
+      node.width = size;
       if (node.children.length > 0) {
         setLevels(node.children, level + 1);
       }
@@ -99,7 +102,7 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
     graph.setDefaultEdgeLabel(() => ({}));
 
     // Set graph direction and node spacing based on level
-    const levelSpacing = baseSpacing / Math.pow(2, level);
+    const levelSpacing = baseSpacing / getBaseScale(level);
     graph.setGraph({
       rankdir: "LR",
       nodesep: levelSpacing,

@@ -1,6 +1,7 @@
 import { Task } from "@campus/feature-tasks/types";
 import { getStatusColor } from "@campus/feature-tasks/utils";
 import { nodeSize, PositionedNode } from "./positioning.utils";
+import { getBaseScale } from "./scale.utils";
 
 export interface ReactFlowGraph {
   nodes: ReactFlowNode[];
@@ -49,12 +50,14 @@ export function convertToReactFlow(
   collectNodes(hierarchy);
 
   function traverse(node: PositionedNode, parentId?: string) {
+    const size = nodeSize / (getBaseScale(node.level + 1) || 1);
+
     nodes.push({
       id: node.id,
       type: "task",
       position: { x: node.x, y: node.y },
-      width: nodeSize / (Math.pow(2, node.level || 0) || 1),
-      height: nodeSize / (Math.pow(2, node.level || 0) || 1),
+      width: size,
+      height: size,
       parentId,
       hidden: node.task.parent?.id !== activeTask?.parent?.id,
       data: { task: node.task, level: node.level, size: node.width },
