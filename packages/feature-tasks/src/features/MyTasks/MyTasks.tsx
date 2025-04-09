@@ -14,16 +14,14 @@ export const MyTasks = ({ className }: MyTasksProps) => {
   if (!activeTasks) return null;
 
   return (
-    <>
-      <div className={cn(className)}>
-        <div className="flex items-center justify-between p-2">
-          <Text as="h2">Active Tasks</Text>
+    <div className={cn("p-2", className)}>
+      <div className="flex items-center justify-between">
+        <Text as="h2">Active Tasks</Text>
 
-          <CreateTaskModalButton />
-        </div>
-
-        {activeTasks && <TaskList tasks={activeTasks} />}
+        <CreateTaskModalButton />
       </div>
-    </>
+
+      {activeTasks && <TaskList tasks={activeTasks} />}
+    </div>
   );
 };

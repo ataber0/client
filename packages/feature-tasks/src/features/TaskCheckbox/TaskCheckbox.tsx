@@ -1,9 +1,9 @@
 import { Checkbox } from "@campus/ui/Checkbox";
 import { useUpdateTask } from "../../data-access/update-task.data-access";
-import { Task } from "../../types/task.models";
+import { TaskBase } from "../../types/task.models";
 
 interface TaskCheckboxProps {
-  task: Task;
+  task: TaskBase;
   className?: string;
 }
 

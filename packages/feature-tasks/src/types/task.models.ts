@@ -10,9 +10,11 @@ export interface TaskBase {
 }
 
 export interface Task extends TaskBase {
-  dependencies: Task[];
-  dependents: Task[];
+  dependencies: TaskBase[];
+  dependents: TaskBase[];
+  subtasks: TaskBase[];
   description: string | null;
+  parent?: TaskBase;
 }
 
 export interface UpdateTaskPayload extends HttpRequestBody {

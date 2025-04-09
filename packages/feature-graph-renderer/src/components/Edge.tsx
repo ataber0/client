@@ -1,12 +1,11 @@
-import {
-  BaseEdge,
-  Edge,
-  EdgeProps,
-  getSmoothStepPath,
-  useViewport,
-} from "@xyflow/react";
+import { cn } from "@campus/ui/cn";
+import { BaseEdge, Edge, EdgeProps, getSmoothStepPath } from "@xyflow/react";
+import { useGraphRenderer } from "../hooks/graph-renderer.hook";
 
-type TaskEdge = Edge<{ color: string }, "taskEdge">;
+type TaskEdge = Edge<
+  { color: string; level: number; parentId?: string },
+  "taskEdge"
+>;
 
 export const TaskEdge = ({
   sourceX,
@@ -17,7 +16,9 @@ export const TaskEdge = ({
   targetPosition,
   data,
 }: EdgeProps<TaskEdge>) => {
-  const { zoom } = useViewport();
+  const { zoom, zoomLevel, activeTask } = useGraphRenderer();
+
+  const strokeWidth = 10 / zoom;
 
   const [edgePath] = getSmoothStepPath({
     sourceX,
@@ -29,16 +30,22 @@ export const TaskEdge = ({
     borderRadius: 40,
   });
 
+  const shouldHide = data?.parentId !== activeTask?.parent?.id;
+
   return (
-    <>
-      <BaseEdge
-        path={edgePath}
-        style={{
-          opacity: 0.5,
-          stroke: data?.color,
-          strokeWidth: 10 / zoom,
-        }}
-      />
-    </>
+    <BaseEdge
+      path={edgePath}
+      className={cn(
+        "opacity-60 transition-opacity duration-600",
+        shouldHide && "opacity-0"
+      )}
+      style={{
+        stroke: data?.color,
+        strokeWidth,
+        // This transform hacks around issues with React Flow and scaling Node components
+        // affecting the edge rendering
+        transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
+      }}
+    />
   );
 };

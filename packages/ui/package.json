@@ -7,6 +7,7 @@
     "./ButtonRow": "./src/ButtonRow/ButtonRow.tsx",
     "./Card": "./src/Card/Card.tsx",
     "./Checkbox": "./src/Checkbox/Checkbox.tsx",
+    "./Fade": "./src/Fade/Fade.tsx",
     "./Form": "./src/Form/Form.tsx",
     "./Icon": "./src/Icon/public-api.ts",
     "./Link": "./src/Link/Link.tsx",
@@ -25,7 +26,8 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.485.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-transition-state": "^2.3.1"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",

@@ -1,85 +1,168 @@
 import { Task } from "@campus/feature-tasks/types";
-import elkjs from "elkjs/lib/elk.bundled.js";
-import { Node } from "../types/graph.models";
+import { graphlib, layout } from "@dagrejs/dagre";
+import { getBaseScale } from "./scale.utils";
 
-// Constants for layout
-const NODE_SIZE = 200; // Size of each node (diameter)
-const BASE_SPACING = 300; // Base spacing for the layout
-const OFFSET_X = -8; // Offset for the layout
-const OFFSET_Y = -8; // Offset for the layout
-
-// Initialize ELK
-const elk = new elkjs();
-
-/**
- * Converts tasks into a graph format that ELK can understand
- */
-function createElkGraph(tasks: Task[]) {
-  const nodes = tasks.map((task) => ({
-    id: task.id,
-    // Store original task data for later use
-    task: task,
-    // Add size constraints to help ELK with layout
-    size: NODE_SIZE,
-  }));
-
-  const edges = tasks.flatMap((task) =>
-    task.dependencies.map((dependency) => ({
-      id: `${task.id}-${dependency.id}`,
-      sources: [task.id],
-      targets: [dependency.id],
-    }))
-  );
-
-  // Calculate dynamic spacing based on number of nodes
-  const baseSpacing = BASE_SPACING * 1;
-
-  return {
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      "elk.direction": "UP",
-      "elk.spacing.nodeNode": baseSpacing.toString(),
-      "elk.layered.spacing.baseValue": baseSpacing.toString(),
-      "elk.layered.spacing.edgeNode": (baseSpacing * 2).toString(),
-      "elk.layered.spacing.edgeEdge": (baseSpacing * 5).toString(),
-    },
-    children: nodes,
-    edges,
-  };
+export interface PositionedNodeInput {
+  id: string;
+  children: PositionedNodeInput[];
+  level: number;
+  task: Task;
+  width: number;
+  height: number;
+  parentId?: string;
 }
 
-/**
- * Converts a tree of tasks into positioned nodes using the Sugiyama Algorithm
- */
-export async function positionNodes(tasks: Task[]): Promise<Node[]> {
-  // Create ELK graph
-  const elkGraph = createElkGraph(tasks);
-
-  // Compute layout
-  const elkLayout = await elk.layout(elkGraph);
-
-  // Convert ELK layout back to our node format
-  const nodes: Node[] = elkLayout.children!.map((elkNode) => ({
-    id: elkNode.id,
-    label: (elkNode as any).task.name,
-    task: (elkNode as any).task,
-    size: elkNode.size,
-    position: {
-      x: elkNode.x!,
-      y: elkNode.y!,
-    },
-  }));
-
-  // Center the entire graph
-  const maxX = Math.max(...nodes.map((n) => n.position.x));
-  const maxY = Math.max(...nodes.map((n) => n.position.y));
-
-  return nodes.map((node) => ({
-    ...node,
-    position: {
-      x: node.position.x - maxX / 2 + OFFSET_X,
-      y: node.position.y - maxY / 2 + OFFSET_Y,
-    },
-  }));
+export interface PositionedNode extends PositionedNodeInput {
+  x: number;
+  y: number;
+  children: PositionedNode[];
+  globalX: number;
+  globalY: number;
 }
+
+export const baseSpacing = 100000;
+export const nodeSize = 100000;
+
+export function buildHierarchy(tasks: Task[]): PositionedNodeInput[] {
+  const nodeMap = new Map<string, PositionedNodeInput>();
+
+  tasks.forEach((task) => {
+    const node: PositionedNodeInput = {
+      id: task.id,
+      parentId: task.parent?.id,
+      width: nodeSize,
+      height: nodeSize,
+      task,
+      children: [],
+      level: 0,
+    };
+    nodeMap.set(node.id, node);
+  });
+
+  const rootNodes: PositionedNodeInput[] = [];
+
+  tasks.forEach((task) => {
+    const node = nodeMap.get(task.id);
+
+    if (!node) {
+      return;
+    }
+
+    if (task.parent?.id) {
+      const parent = nodeMap.get(task.parent.id);
+      if (parent) {
+        parent.children!.push(node);
+      }
+    } else {
+      rootNodes.push(node);
+    }
+  });
+
+  function setLevels(nodes: PositionedNodeInput[], level: number) {
+    const size = nodeSize / getBaseScale(level + 1);
+
+    nodes.forEach((node) => {
+      node.level = level;
+      node.height = size;
+      node.width = size;
+      if (node.children.length > 0) {
+        setLevels(node.children, level + 1);
+      }
+    });
+  }
+
+  setLevels(rootNodes, 0);
+
+  return rootNodes;
+}
+
+export const positionNodes = (tasks: Task[]): PositionedNode[] => {
+  const positionedNodesInput = buildHierarchy(tasks);
+
+  // Create a map to store all nodes for easy lookup
+  const nodeMap = new Map<string, PositionedNodeInput>();
+
+  // Helper function to collect all nodes into the map
+  function collectNodes(nodes: PositionedNodeInput[]) {
+    nodes.forEach((node) => {
+      nodeMap.set(node.id, node);
+      if (node.children.length > 0) {
+        collectNodes(node.children);
+      }
+    });
+  }
+
+  // Collect all nodes into the map
+  collectNodes(positionedNodesInput);
+
+  // Process each level separately, starting with the root level
+  function processLevel(
+    nodes: PositionedNodeInput[],
+    level: number,
+    globalX: number,
+    globalY: number
+  ): PositionedNode[] {
+    const graph = new graphlib.Graph();
+    graph.setDefaultEdgeLabel(() => ({}));
+
+    // Set graph direction and node spacing based on level
+    const levelSpacing = baseSpacing / getBaseScale(level);
+    graph.setGraph({
+      rankdir: "LR",
+      nodesep: levelSpacing,
+      ranksep: levelSpacing,
+    });
+
+    // Add nodes at this level to the graph
+    nodes.forEach((node) => {
+      graph.setNode(node.id, {
+        width: node.width,
+        height: node.height,
+      });
+
+      // Add edges for dependencies
+      if (node.task.dependencies && node.task.dependencies.length > 0) {
+        node.task.dependencies.forEach((dependency) => {
+          // Only add the edge if the dependency exists in our node map
+          if (nodeMap.has(dependency.id)) {
+            graph.setEdge(dependency.id, node.id);
+          }
+        });
+      }
+    });
+
+    // Run the layout algorithm for this level
+    layout(graph);
+
+    // Convert the graph back to our PositionedNode structure
+    return nodes.map((node) => {
+      const graphNode = graph.node(node.id);
+
+      // Process children (subtasks) recursively
+      const positionedChildren =
+        node.children.length > 0
+          ? processLevel(
+              node.children,
+              level + 1,
+              globalX + graphNode.x,
+              globalY + graphNode.y
+            )
+          : [];
+
+      // Create the positioned node
+      const positionedNode: PositionedNode = {
+        ...node,
+        x: graphNode.x,
+        y: graphNode.y,
+        globalX: globalX + graphNode.x,
+        globalY: globalY + graphNode.y,
+        children: positionedChildren,
+      };
+
+      return positionedNode;
+    });
+  }
+
+  // Start processing from the root level
+  return processLevel(positionedNodesInput, 0, 0, 0);
+};

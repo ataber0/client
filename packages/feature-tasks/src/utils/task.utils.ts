@@ -1,10 +1,17 @@
 import { Task } from "../types/task.models";
 
+const isBlocked = (task: Task) => {
+  return (
+    task.dependencies.filter((dependency) => dependency.status !== "Done")
+      .length > 0
+  );
+};
+
 export const isActive = (task: Task) => {
   return (
     task.status === "Todo" &&
-    task.dependencies.filter((dependency) => dependency.status !== "Done")
-      .length === 0
+    !isBlocked(task) &&
+    task.subtasks.filter((subtask) => subtask.status !== "Done").length === 0
   );
 };
 
@@ -16,6 +23,6 @@ export const getStatus = (task: Task) => {
 
 export const getStatusColor = (task: Task) => {
   if (task.status === "Done") return "green";
-  if (isActive(task)) return "darkorange";
-  return "gray";
+  if (isBlocked(task)) return "gray";
+  return "darkorange";
 };

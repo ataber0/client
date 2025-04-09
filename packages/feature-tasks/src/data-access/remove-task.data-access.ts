@@ -1,11 +1,11 @@
 import { useHttpClient } from "@campus/runtime/http-client";
 import { queryClient, useMutation } from "@campus/runtime/query";
 
-export const useRemoveTask = (taskId: string) => {
+export const useRemoveTask = () => {
   const { delete: httpDelete } = useHttpClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({ taskId }: { taskId: string }) => {
       await httpDelete(`/api/tasks/${taskId}/`);
     },
     onSuccess: () => {
