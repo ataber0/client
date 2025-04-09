@@ -64,6 +64,8 @@ const Graph = ({ className }: GraphRendererProps) => {
         zoomOnDoubleClick={false}
         connectionLineStyle={{
           strokeWidth: nodeSize / 5 / Math.pow(2, zoomLevel),
+          // This transform hacks around issues with React Flow and scaling Node components
+          // affecting the edge rendering
           transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
         }}
       >

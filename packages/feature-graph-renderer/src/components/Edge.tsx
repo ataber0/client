@@ -42,6 +42,8 @@ export const TaskEdge = ({
       style={{
         stroke: data?.color,
         strokeWidth,
+        // This transform hacks around issues with React Flow and scaling Node components
+        // affecting the edge rendering
         transform: `translate(${2 / zoom}px, ${6 / zoom}px)`,
       }}
     />
