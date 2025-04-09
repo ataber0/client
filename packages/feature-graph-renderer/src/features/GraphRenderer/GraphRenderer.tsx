@@ -81,7 +81,7 @@ const TaskRendererBackground = () => {
 
   return (
     <Background
-      gap={50 / zoom}
+      gap={30000}
       size={1.2 / zoom}
       offset={1}
       lineWidth={1}
