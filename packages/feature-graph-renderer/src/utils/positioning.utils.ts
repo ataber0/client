@@ -16,6 +16,8 @@ export interface PositionedNode extends PositionedNodeInput {
   x: number;
   y: number;
   children: PositionedNode[];
+  globalX: number;
+  globalY: number;
 }
 
 export const baseSpacing = 100000;
@@ -96,7 +98,9 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
   // Process each level separately, starting with the root level
   function processLevel(
     nodes: PositionedNodeInput[],
-    level: number
+    level: number,
+    globalX: number,
+    globalY: number
   ): PositionedNode[] {
     const graph = new graphlib.Graph();
     graph.setDefaultEdgeLabel(() => ({}));
@@ -136,13 +140,22 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
 
       // Process children (subtasks) recursively
       const positionedChildren =
-        node.children.length > 0 ? processLevel(node.children, level + 1) : [];
+        node.children.length > 0
+          ? processLevel(
+              node.children,
+              level + 1,
+              globalX + graphNode.x,
+              globalY + graphNode.y
+            )
+          : [];
 
       // Create the positioned node
       const positionedNode: PositionedNode = {
         ...node,
         x: graphNode.x,
         y: graphNode.y,
+        globalX: globalX + graphNode.x,
+        globalY: globalY + graphNode.y,
         children: positionedChildren,
       };
 
@@ -151,5 +164,5 @@ export const positionNodes = (tasks: Task[]): PositionedNode[] => {
   }
 
   // Start processing from the root level
-  return processLevel(positionedNodesInput, 0);
+  return processLevel(positionedNodesInput, 0, 0, 0);
 };

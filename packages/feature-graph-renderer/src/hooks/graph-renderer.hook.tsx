@@ -111,19 +111,13 @@ export const GraphRendererProvider = ({
 
   // Set Viewport to the active task
   useEffect(() => {
-    const originalNode = reactFlow.nodes.find(
+    const node = reactFlow.nodes.find(
       (node) => node.data.task.id === params.taskId
     );
-    if (originalNode) {
-      let node: ReactFlowNode | undefined = originalNode;
-      let x = node.width / 2;
-      let y = node.height / 2;
-      while (node) {
-        x += node.position.x;
-        y += node.position.y;
-        node = reactFlow.nodes.find((n) => n.id === node?.parentId);
-      }
-      viewport.setViewport({ x, y, zoomLevel: originalNode.data.level + 1 });
+    if (node) {
+      const x = node.data.globalX + node.width / 2;
+      const y = node.data.globalY + node.height / 2;
+      viewport.setViewport({ x, y, zoomLevel: node.data.level + 1 });
     } else {
       viewport.setViewport((existing) => ({
         ...existing,

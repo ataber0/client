@@ -12,7 +12,13 @@ export interface ReactFlowNode {
   id: string;
   type: "task";
   position: { x: number; y: number };
-  data: { task: Task; level: number; size: number };
+  data: {
+    task: Task;
+    level: number;
+    size: number;
+    globalX: number;
+    globalY: number;
+  };
   width: number;
   height: number;
   hidden: boolean;
@@ -59,7 +65,13 @@ export function convertToReactFlow(
       height: size,
       parentId,
       hidden: node.task.parent?.id !== activeTask?.parent?.id,
-      data: { task: node.task, level: node.level, size: node.width },
+      data: {
+        task: node.task,
+        level: node.level,
+        size: node.width,
+        globalX: node.globalX,
+        globalY: node.globalY,
+      },
     });
 
     // Add dependency edges
