@@ -16,7 +16,7 @@ export const MyTasks = ({ className }: MyTasksProps) => {
   if (!activeTasks) return null;
 
   return (
-    <div className={cn("p-2", className)}>
+    <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex items-center justify-between">
         <Text as="h2">Active Tasks</Text>
 
@@ -26,7 +26,9 @@ export const MyTasks = ({ className }: MyTasksProps) => {
       {activeTasks && <TaskList tasks={activeTasks} />}
 
       <div className="flex items-center justify-between">
-        <Text as="h2">Context</Text>
+        <Text as="h2" className="text-sm">
+          Context
+        </Text>
 
         <GlobalContext variant="text" className="text-xs" />
       </div>

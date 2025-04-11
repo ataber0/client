@@ -1,5 +1,5 @@
 export const theme = {
-  background: "#21262d",
+  background: "#161a1e",
   surface: "#21262d",
   onSurface: "#ffffff",
   primary: "#FF4F00",

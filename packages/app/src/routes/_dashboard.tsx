@@ -26,11 +26,11 @@ function RouteComponent() {
     <div>
       <GraphRenderer />
 
-      <div className="bg-surface rounded-lg overflow-hidden fixed top-0 left-0 overflow-y-auto max-h-full w-80">
+      <div className="bg-background rounded-lg overflow-hidden fixed top-0 left-0 overflow-y-auto max-h-full w-80">
         <Outlet />
       </div>
 
-      <Chat className="fixed top-0 right-0 p-2 bg-surface rounded-lg w-[320px] max-h-full overflow-y-auto" />
+      <Chat className="fixed top-0 right-0 p-2 bg-background rounded-lg w-[320px] max-h-full overflow-y-auto" />
     </div>
   );
 }

@@ -22,7 +22,7 @@ export const FileInput = ({
   return (
     <div
       className={cn(
-        "p-10 border-2 border-gray-300 rounded-md cursor-pointer",
+        "bg-surface p-10 border-2 border-gray-300 rounded-md cursor-pointer",
         className
       )}
       {...getRootProps()}

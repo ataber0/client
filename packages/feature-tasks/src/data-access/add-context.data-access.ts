@@ -5,9 +5,12 @@ export const useAddContext = () => {
   const { post } = useHttpClient();
 
   return useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ file, taskId }: { file: File; taskId?: string }) => {
       const formData = new FormData();
       formData.append("file", file);
+      if (taskId) {
+        formData.append("taskId", taskId);
+      }
       return post("/api/context/", formData as unknown as HttpRequestBody, {
         useRawBody: true,
       });

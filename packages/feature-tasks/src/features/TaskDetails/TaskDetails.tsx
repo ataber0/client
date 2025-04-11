@@ -13,6 +13,7 @@ import { CreateTaskPayload, TaskBase } from "../../types/task.models";
 import { CreateTaskModalButton } from "../CreateTask/CreateTask";
 import { EditTask } from "../EditTask/EditTask";
 import { TaskCheckbox } from "../TaskCheckbox/TaskCheckbox";
+import { TaskContext } from "../TaskContext/TaskContext";
 
 export interface TaskDetailsProps {
   taskId: string;
@@ -140,7 +141,7 @@ export const TaskDetails = ({ taskId }: TaskDetailsProps) => {
           )}
         />
 
-        <hr />
+        <TaskContext taskId={taskId} />
       </div>
 
       <Modal

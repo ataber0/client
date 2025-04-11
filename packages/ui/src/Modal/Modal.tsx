@@ -57,7 +57,7 @@ export const Modal: React.FC<ModalProps> = ({
       onClose={onClose}
       onMouseUp={handleClick}
     >
-      <div className="flex flex-col">
+      <div className="bg-background flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-600">
           {title && <Text className="text-sm font-semibold">{title}</Text>}
           <Button
@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
             <X className="w-5 h-5 text-gray-500" />
           </Button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="bg-background p-6">{children}</div>
       </div>
     </dialog>
   );

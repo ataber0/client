@@ -34,15 +34,15 @@ export const Chat = ({ className }: ChatProps) => {
     <div className={cn("flex flex-col gap-6 px-2 pt-2", className)}>
       {responses.map((response) => (
         <div key={response.message.id} className="flex flex-col gap-4">
-          <Text className="border-on-surface border p-2 rounded-lg text-sm">
+          <Text className="bg-surface border-on-surface border p-2 rounded-lg text-xs">
             {response.userInput}
           </Text>
 
-          <Text>{response.message.content}</Text>
+          <Text className="text-sm">{response.message.content}</Text>
         </div>
       ))}
 
-      <form className="bg-surface sticky bottom-0" onSubmit={handleSubmit}>
+      <form className="sticky bottom-0" onSubmit={handleSubmit}>
         <TextArea
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
