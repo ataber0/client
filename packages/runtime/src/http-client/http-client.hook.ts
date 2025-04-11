@@ -11,7 +11,8 @@ export interface HttpRequestOptions {
 }
 
 const getDevelopmentServerUrl = () => {
-  return "http://localhost:8001";
+  // return "http://localhost:8001";
+  return "http://192.168.1.252:8001";
 };
 
 const baseUrl = getDevelopmentServerUrl();

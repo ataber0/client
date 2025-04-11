@@ -12,6 +12,7 @@
     "./Form": "./src/Form/Form.tsx",
     "./Icon": "./src/Icon/public-api.ts",
     "./Link": "./src/Link/Link.tsx",
+    "./MediaQuery": "./src/MediaQuery/MediaQuery.tsx",
     "./Modal": "./src/Modal/Modal.tsx",
     "./Text": "./src/Text/Text.tsx",
     "./TextArea": "./src/TextArea/TextArea.tsx",
@@ -29,6 +30,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-responsive": "^10.0.1",
     "react-transition-state": "^2.3.1"
   },
   "devDependencies": {

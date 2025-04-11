@@ -13,6 +13,7 @@
     "@campus/feature-graph-renderer": "workspace:*",
     "@campus/runtime": "workspace:*",
     "@campus/feature-tasks": "workspace:*",
+    "@campus/ui": "workspace:*",
     "@tanstack/react-router": "^1.114.29",
     "@tanstack/react-router-devtools": "^1.114.29",
     "@tanstack/react-start": "^1.114.30",

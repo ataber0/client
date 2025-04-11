@@ -1,6 +1,7 @@
 import { GraphRenderer } from "@campus/feature-graph-renderer/GraphRenderer";
 import { Chat } from "@campus/feature-tasks/Chat";
 import { useAuthToken } from "@campus/runtime/auth";
+import { MediaQuery } from "@campus/ui/MediaQuery";
 import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_dashboard")({
@@ -22,6 +23,10 @@ function RouteComponent() {
     return null;
   }
 
+  return <MediaQuery mobile={<Outlet />} desktop={<DesktopRouteComponent />} />;
+}
+
+function DesktopRouteComponent() {
   return (
     <div>
       <GraphRenderer />
