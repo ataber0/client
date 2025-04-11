@@ -5,15 +5,16 @@ export type HttpSearchParams = Record<string, string | number | undefined>;
 
 export type HttpRequestBody = Record<string, unknown>;
 
+export interface HttpRequestOptions {
+  headers?: Record<string, string>;
+  useRawBody?: boolean;
+}
+
 const getDevelopmentServerUrl = () => {
   return "http://localhost:8001";
 };
 
 const baseUrl = getDevelopmentServerUrl();
-
-const baseHeaders = {
-  "Content-Type": "application/json",
-};
 
 const getUrlSearchParams = (params: HttpSearchParams) => {
   const newParams = new URLSearchParams();
@@ -32,55 +33,74 @@ export const useHttpClient = () => {
 
   const headers = useMemo(() => {
     return {
-      ...baseHeaders,
       Authorization: `Bearer ${token}`,
     };
   }, [token]);
 
   const get = useCallback(
-    async <T = unknown>(url: string, params?: HttpSearchParams): Promise<T> => {
+    async <T = unknown>(
+      url: string,
+      params?: HttpSearchParams,
+      options?: HttpRequestOptions
+    ): Promise<T> => {
       const stringifiedParams = params
         ? getUrlSearchParams(params).toString()
         : "";
       const urlWithParams = `${baseUrl}${url}${stringifiedParams}`;
-      return fetch(urlWithParams, { headers }).then((response) =>
-        response.json()
-      );
+      return fetch(urlWithParams, {
+        headers: { ...headers, ...options?.headers },
+      }).then((response) => response.json());
     },
     [headers]
   );
 
   const post = useCallback(
-    <T = unknown>(url: string, body: HttpRequestBody = {}): Promise<T> => {
+    <T = unknown>(
+      url: string,
+      body: HttpRequestBody = {},
+      options: HttpRequestOptions = {}
+    ): Promise<T> => {
       return fetch(`${baseUrl}${url}`, {
         method: "post",
-        body: JSON.stringify(body),
-        headers,
+        body: options?.useRawBody
+          ? (body as unknown as BodyInit)
+          : JSON.stringify(body),
+        headers: { ...headers, ...options?.headers },
       }).then((response) => response.json());
     },
     [headers]
   );
 
   const put = useCallback(
-    <T = unknown>(url: string, body: HttpRequestBody = {}): Promise<T> => {
+    <T = unknown>(
+      url: string,
+      body: HttpRequestBody = {},
+      options: HttpRequestOptions = {}
+    ): Promise<T> => {
       return fetch(`${baseUrl}${url}`, {
         method: "put",
-        body: JSON.stringify(body),
-        headers,
+        body: options?.useRawBody
+          ? (body as unknown as BodyInit)
+          : JSON.stringify(body),
+        headers: { ...headers, ...options?.headers },
       }).then((response) => response.json());
     },
     [headers]
   );
 
   const httpDelete = useCallback(
-    async <T = unknown>(url: string, params?: HttpSearchParams): Promise<T> => {
+    async <T = unknown>(
+      url: string,
+      params?: HttpSearchParams,
+      options?: HttpRequestOptions
+    ): Promise<T> => {
       const stringifiedParams = params
         ? getUrlSearchParams(params).toString()
         : "";
       const urlWithParams = `${baseUrl}${url}${stringifiedParams}`;
       return fetch(urlWithParams, {
         method: "delete",
-        headers,
+        headers: { ...headers, ...options?.headers },
       }).then((response) => response.json());
     },
     [headers]

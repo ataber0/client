@@ -8,6 +8,7 @@
     "./Card": "./src/Card/Card.tsx",
     "./Checkbox": "./src/Checkbox/Checkbox.tsx",
     "./Fade": "./src/Fade/Fade.tsx",
+    "./FileInput": "./src/FileInput/FileInput.tsx",
     "./Form": "./src/Form/Form.tsx",
     "./Icon": "./src/Icon/public-api.ts",
     "./Link": "./src/Link/Link.tsx",
@@ -27,6 +28,7 @@
     "lucide-react": "^0.485.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-transition-state": "^2.3.1"
   },
   "devDependencies": {
